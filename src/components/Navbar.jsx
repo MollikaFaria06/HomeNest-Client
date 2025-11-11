@@ -10,7 +10,6 @@ export default function Navbar() {
   const [ddOpen, setDdOpen] = useState(false);
   const ddRef = useRef();
 
- 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (ddRef.current && !ddRef.current.contains(e.target)) setDdOpen(false);
@@ -57,7 +56,7 @@ export default function Navbar() {
   return (
     <nav className="bg-black shadow-md py-2 px-8 lg:px-10">
       <div className="flex items-center justify-between h-16">
-       
+        {/* Logo */}
         <div className="flex-shrink-0">
           <button
             onClick={() => navigate('/')}
@@ -67,7 +66,7 @@ export default function Navbar() {
           </button>
         </div>
 
-      
+        {/* Nav Links */}
         <div className="hidden lg:flex space-x-4">
           {navLinks.map((link) => (
             <NavLink
@@ -86,54 +85,63 @@ export default function Navbar() {
           ))}
         </div>
 
-       
+        {/* User Section */}
         <div className="flex items-center gap-2">
           {!user ? (
             <div className="hidden lg:flex gap-2">
-         
               <button
                 onClick={() => navigate('/login')}
-                className="px-5 py-2 text-white font-semibold text-lg bg-green-500 rounded-lg hover:bg-black 
-                  hover: text-white border-2 border-green-500 rounded-lgtransition-colors duration-300"
+                className="px-5 py-2 text-white font-semibold text-lg bg-green-500 rounded-lg hover:bg-black transition-colors duration-300"
               >
                 Login
               </button>
-
-            
               <button
                 onClick={() => navigate('/register')}
-                className="px-5 py-2 text-white font-semibold text-lg bg-green-500 rounded-lg hover:bg-black 
-                  hover: text-white border-2 border-green-500 rounded-lgtransition-colors duration-300"
+                className="px-5 py-2 text-white font-semibold text-lg bg-green-500 rounded-lg hover:bg-black transition-colors duration-300"
               >
                 Signup
               </button>
             </div>
           ) : (
-            <div className="relative" ref={ddRef}>
-              <button
-                onClick={() => setDdOpen(!ddOpen)}
-                className="btn btn-ghost btn-circle avatar p-0"
-              >
+            <>
+              {/* LG and above: avatar + logout inline */}
+              <div className="hidden lg:flex items-center gap-2">
                 <Avatar />
-              </button>
-              {ddOpen && (
-                <ul className="absolute right-0 mt-2 w-52 bg-black shadow-lg rounded-md py-2">
-                  <li className="px-4 py-1 font-medium text-white">{user.displayName || 'No Name'}</li>
-                  <li className="px-4 py-1 text-xs text-gray-400 break-words">{user.email}</li>
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-800 transition-colors duration-300"
-                    >
-                      Log out
-                    </button>
-                  </li>
-                </ul>
-              )}
-            </div>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 text-white font-semibold bg-green-500 rounded-lg text-lg hover:bg-red-500 transition-colors duration-300"
+                >
+                  Log out
+                </button>
+              </div>
+
+              {/* MD only: avatar + dropdown */}
+              <div className="hidden md:flex lg:hidden relative" ref={ddRef}>
+                <button
+                  onClick={() => setDdOpen(!ddOpen)}
+                  className="btn btn-ghost btn-circle avatar p-0"
+                >
+                  <Avatar />
+                </button>
+                {ddOpen && (
+                  <ul className="absolute right-0 mt-2 w-52 bg-black shadow-lg rounded-md py-2 z-50">
+                    <li className="px-4 py-1 font-medium text-white">{user.displayName || 'No Name'}</li>
+                    <li className="px-4 py-1 text-xs text-gray-400 break-words">{user.email}</li>
+                    <li>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full px-4 py-2 mt-2 text-white bg-green-500 rounded-lg hover:bg-red-500 transition-colors duration-300"
+                      >
+                        Log out
+                      </button>
+                    </li>
+                  </ul>
+                )}
+              </div>
+            </>
           )}
 
-         
+          {/* Mobile menu button */}
           <div className="lg:hidden">
             <button onClick={() => setMobileOpen(!mobileOpen)} className="btn btn-ghost p-2 text-white">
               {mobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
@@ -142,7 +150,7 @@ export default function Navbar() {
         </div>
       </div>
 
-    
+      {/* Mobile Menu */}
       {mobileOpen && (
         <div className="lg:hidden mt-2 border-t border-gray-700 bg-black">
           <ul className="flex flex-col p-2 space-y-1">
@@ -160,20 +168,15 @@ export default function Navbar() {
 
             {!user ? (
               <div className="flex gap-2 px-2 pt-2">
-                
                 <button
                   onClick={() => { navigate('/login'); setMobileOpen(false); }}
-                  className="flex-1 px-4 py-2 text-white font-semibold text-xl bg-green-500 rounded-lg hover:bg-black 
-                  hover: text-white border-2 border-green-500 rounded-lgtransition-colors duration-300"
+                  className="flex-1 px-4 py-2 text-white font-semibold text-xl bg-green-500 rounded-lg hover:bg-green-700 transition-colors duration-300"
                 >
                   Login
                 </button>
-
-              
                 <button
                   onClick={() => { navigate('/register'); setMobileOpen(false); }}
-                  className="flex-1 px-4 py-2 text-white font-semibold text-xl bg-green-500 rounded-lg hover:bg-black 
-                  hover: text-white border-2 border-green-500 rounded-lgtransition-colors duration-300"
+                  className="flex-1 px-4 py-2 text-white font-semibold text-xl bg-green-500 rounded-lg hover:bg-green-700 transition-colors duration-300"
                 >
                   Signup
                 </button>
@@ -189,7 +192,7 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={() => { handleLogout(); setMobileOpen(false); }}
-                  className="mt-2 btn btn-ghost w-full text-left text-red-500 hover:bg-gray-800 transition-colors duration-300"
+                  className="mt-2 w-full bg-green-500 text-lg text-white py-2 rounded-lg hover:bg-red-500 transition-colors duration-300"
                 >
                   Log out
                 </button>

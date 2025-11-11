@@ -1,203 +1,140 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { FiMenu, FiX } from 'react-icons/fi';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { updateProfile } from "firebase/auth";
+import { auth } from "../firebase/firebase.config";
+import toast from "react-hot-toast";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FcGoogle } from "react-icons/fc";
 
-export default function Navbar() {
-  const { user, logout } = useAuth();
+export default function Register() {
+  const { registerUser, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [ddOpen, setDdOpen] = useState(false);
-  const ddRef = useRef();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    photoURL: "",
+    password: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
 
- 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (ddRef.current && !ddRef.current.contains(e.target)) setDdOpen(false);
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleLogout = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { name, email, photoURL, password } = formData;
+
+    // Password Validation
+    if (password.length < 6)
+      return toast.error("Password must be at least 6 characters");
+    if (!/[A-Z]/.test(password))
+      return toast.error("Must contain an Uppercase letter in the password");
+    if (!/[a-z]/.test(password))
+      return toast.error("Must contain a Lowercase letter in the password");
+
     try {
-      await logout();
-      navigate('/');
+      const userCred = await registerUser(email, password);
+      await updateProfile(auth.currentUser, { displayName: name, photoURL });
+      toast.success("Registration successful!");
+      navigate("/");
     } catch (err) {
-      console.error(err);
+      toast.error(err.message);
     }
   };
 
-  const Avatar = () => {
-    if (user?.photoURL)
-      return <img src={user.photoURL} className="w-8 h-8 rounded-full object-cover" alt="avatar" />;
-
-    const initials = (user?.displayName || user?.email || '')
-      .split(' ')
-      .map(n => n[0])
-      .slice(0, 2)
-      .join('')
-      .toUpperCase();
-
-    return (
-      <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-semibold">
-        {initials}
-      </div>
-    );
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      toast.success("Logged in with Google!");
+      navigate("/");
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
-  const navLinks = [
-    { name: 'Home', to: '/' },
-    { name: 'All Properties', to: '/all-properties' },
-    { name: 'Add Property', to: '/add-property' },
-    { name: 'My Properties', to: '/my-properties' },
-    { name: 'My Ratings', to: '/my-ratings' },
-  ];
-
   return (
-    <nav className="bg-black shadow-md px-4 lg:px-8">
-      <div className="flex items-center justify-between h-16">
-       
-        <div className="flex-shrink-0">
-          <button
-            onClick={() => navigate('/')}
-            className="text-3xl text-green-600 font-bold btn btn-ghost normal-case"
-          >
-            🏡HomeNest
-          </button>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center text-green-600 mb-6">
+          Create an Account
+        </h2>
 
-      
-        <div className="hidden lg:flex space-x-4">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive
-                    ? 'bg-green-600 text-black'
-                    : 'text-white hover:bg-green-600 hover:text-black transition-colors duration-300'
-                }`
-              }
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="name"
+            type="text"
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={handleChange}
+            className="border-2 border-gray-400 p-2 w-full rounded"
+            required
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            className="border-2 border-gray-400 p-2 w-full rounded"
+            required
+          />
+          <input
+            name="photoURL"
+            type="text"
+            placeholder="Photo URL"
+            value={formData.photoURL}
+            onChange={handleChange}
+            className="border-2 border-gray-400 p-2 w-full rounded"
+          />
+
+          {/* Password Field with Eye Icon */}
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="border-2 border-gray-400 p-2 w-full rounded pr-10"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-2 text-gray-600"
             >
-              {link.name}
-            </NavLink>
-          ))}
-        </div>
-
-       
-        <div className="flex items-center gap-2">
-          {!user ? (
-            <div className="hidden lg:flex gap-2">
-         
-              <button
-                onClick={() => navigate('/login')}
-                className="px-5 py-2 text-white font-semibold text-lg bg-green-500 rounded-lg hover:bg-black 
-                  hover: text-white border-2 border-green-500 rounded-lgtransition-colors duration-300"
-              >
-                Login
-              </button>
-
-            
-              <button
-                onClick={() => navigate('/register')}
-                className="px-5 py-2 text-white font-semibold text-lg bg-green-500 rounded-lg hover:bg-black 
-                  hover: text-white border-2 border-green-500 rounded-lgtransition-colors duration-300"
-              >
-                Signup
-              </button>
-            </div>
-          ) : (
-            <div className="relative" ref={ddRef}>
-              <button
-                onClick={() => setDdOpen(!ddOpen)}
-                className="btn btn-ghost btn-circle avatar p-0"
-              >
-                <Avatar />
-              </button>
-              {ddOpen && (
-                <ul className="absolute right-0 mt-2 w-52 bg-black shadow-lg rounded-md py-2">
-                  <li className="px-4 py-1 font-medium text-white">{user.displayName || 'No Name'}</li>
-                  <li className="px-4 py-1 text-xs text-gray-400 break-words">{user.email}</li>
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-800 transition-colors duration-300"
-                    >
-                      Log out
-                    </button>
-                  </li>
-                </ul>
-              )}
-            </div>
-          )}
-
-         
-          <div className="lg:hidden">
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="btn btn-ghost p-2 text-white">
-              {mobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+              {showPassword ? <FiEye /> : <FiEyeOff />}
             </button>
           </div>
-        </div>
+
+          <button
+            type="submit"
+            className="btn w-full bg-green-600 text-lg text-white hover:bg-green-700 border-2 border-gray-400 p-2 rounded"
+          >
+            Register
+          </button>
+        </form>
+
+        
+        <button
+          onClick={handleGoogleLogin}
+          className="btn btn-outline w-full mt-6 p-2 border flex items-center justify-center gap-2"
+        >
+          <FcGoogle size={20} />
+          Continue with Google
+        </button>
+
+        <p className="text-center text-sm mt-4">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-green-600 font-semibold hover:underline"
+          >
+            Login
+          </Link>
+        </p>
       </div>
-
-    
-      {mobileOpen && (
-        <div className="lg:hidden mt-2 border-t border-gray-700 bg-black">
-          <ul className="flex flex-col p-2 space-y-1">
-            {navLinks.map((link) => (
-              <li key={link.to}>
-                <NavLink
-                  to={link.to}
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-500 hover:text-black transition-colors duration-300"
-                >
-                  {link.name}
-                </NavLink>
-              </li>
-            ))}
-
-            {!user ? (
-              <div className="flex gap-2 px-2 pt-2">
-                
-                <button
-                  onClick={() => { navigate('/login'); setMobileOpen(false); }}
-                  className="flex-1 px-4 py-2 text-white font-semibold text-xl bg-green-500 rounded-lg hover:bg-black 
-                  hover: text-white border-2 border-green-500 rounded-lgtransition-colors duration-300"
-                >
-                  Login
-                </button>
-
-              
-                <button
-                  onClick={() => { navigate('/register'); setMobileOpen(false); }}
-                  className="flex-1 px-4 py-2 text-white font-semibold text-xl bg-green-500 rounded-lg hover:bg-black 
-                  hover: text-white border-2 border-green-500 rounded-lgtransition-colors duration-300"
-                >
-                  Signup
-                </button>
-              </div>
-            ) : (
-              <div className="px-2 pt-2">
-                <div className="flex items-center gap-2">
-                  <Avatar />
-                  <div>
-                    <div className="text-sm font-medium text-white">{user.displayName || 'No name'}</div>
-                    <div className="text-xs text-gray-400 break-words">{user.email}</div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => { handleLogout(); setMobileOpen(false); }}
-                  className="mt-2 btn btn-ghost w-full text-left text-red-500 hover:bg-gray-800 transition-colors duration-300"
-                >
-                  Log out
-                </button>
-              </div>
-            )}
-          </ul>
-        </div>
-      )}
-    </nav>
+    </div>
   );
 }

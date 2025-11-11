@@ -1,14 +1,41 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
-import app from "../firebase/firebase.config"; // নিশ্চিত হও ফাইল আছে
-
-const auth = getAuth(app);
-const AuthContext = createContext();
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from "firebase/auth";
+import { auth } from "../firebase/firebase.config";
+export const AuthContext = createContext();
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const provider = new GoogleAuthProvider();
+
+  // ✅ Register user 
+  const registerUser = (email, password) => {
+    return createUserWithEmailAndPassword(auth, email, password);
+  };
+
+  // ✅ Login user
+  const loginUser = (email, password) => {
+    return signInWithEmailAndPassword(auth, email, password);
+  };
+
+  // ✅ Google login
+  const loginWithGoogle = () => {
+    return signInWithPopup(auth, provider);
+  };
+
+  // ✅ Logout
+  const logout = () => signOut(auth);
+
+  // ✅ Track user
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -17,18 +44,17 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  const login = (email, password) => signInWithEmailAndPassword(auth, email, password);
-  const register = (email, password, displayName) =>
-    createUserWithEmailAndPassword(auth, email, password).then(() =>
-      updateProfile(auth.currentUser, { displayName })
-    );
-  const logout = () => signOut(auth);
-
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
-      {children}
+    <AuthContext.Provider
+      value={{
+        user,
+        registerUser,
+        loginUser,
+        loginWithGoogle,
+        logout,
+      }}
+    >
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);
