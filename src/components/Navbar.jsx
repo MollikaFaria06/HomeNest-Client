@@ -55,7 +55,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-black shadow-md px-4 lg:px-8">
+    <nav className="bg-black shadow-md py-2 px-8 lg:px-10">
       <div className="flex items-center justify-between h-16">
        
         <div className="flex-shrink-0">
