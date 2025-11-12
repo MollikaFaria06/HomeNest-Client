@@ -14,11 +14,9 @@ export default function MyRatings() {
       return;
     }
 
-    // Fetch reviews submitted by logged-in user
     fetch(`http://localhost:5000/my-ratings?email=${user.email}`)
       .then(res => res.json())
       .then(async (data) => {
-        // Fetch property info for each review
         const ratingsWithProperty = await Promise.all(
           data.map(async (review) => {
             try {
@@ -29,13 +27,11 @@ export default function MyRatings() {
                 propertyName: property.title || 'Unknown Property',
                 propertyThumbnail: property.image || '',
               };
-            } catch (err) {
-              console.error(err);
+            } catch {
               return { ...review, propertyName: 'Unknown', propertyThumbnail: '' };
             }
           })
         );
-
         setRatings(ratingsWithProperty);
         setLoading(false);
       })
@@ -63,14 +59,9 @@ export default function MyRatings() {
             )}
             <div className="p-4">
               <h2 className="text-xl font-semibold text-red-600 mb-1">{r.propertyName}</h2>
-              <div className="flex items-center mb-1">
-                <Rating style={{ maxWidth: 120 }} value={r.rating} readOnly />
-                <span className="ml-2 text-sm text-gray-500">({r.rating})</span>
-              </div>
+              <Rating style={{ maxWidth: 120 }} value={r.rating} readOnly />
               <p className="text-blue-700 mb-1">{r.reviewText}</p>
-              <p className="text-green-500 text-sm mb-1">
-                Reviewed by: {user?.email} 
-              </p>
+              <p className="text-green-500 text-sm mb-1">Reviewed by: {user?.email}</p>
               <p className="text-orange-700 text-sm">
                 Date: {new Date(r.createdAt).toLocaleDateString()}
               </p>

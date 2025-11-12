@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation, useMatch } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -67,7 +67,7 @@ function App() {
           element={
             <PrivateRoute>
               <PropertyDetails />
-            </PrivateRoute>
+              </PrivateRoute> 
           }
         />
         <Route path="/login" element={<Login />} />
