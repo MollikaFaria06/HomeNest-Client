@@ -60,11 +60,12 @@ export default function UpdateProperty() {
           icon: "success",
           confirmButtonColor: "#16a34a",
         }).then(() => {
-            navigate(`/properties/${id}`);
-        })
-        
+          // Redirect to MyProperties page instead of property details
+          navigate("/my-properties");
+        });
       } else {
-        Swal.fire("Error", "Failed to update property.", "error");
+        const data = await res.json();
+        Swal.fire("Error", data.message || "Failed to update property.", "error");
       }
     } catch (err) {
       console.error(err);
@@ -83,10 +84,8 @@ export default function UpdateProperty() {
 
   return (
     <>
-      {/* Navbar */}
       <Navbar />
 
-      {/* Main content */}
       <div className="min-h-screen bg-green-200 flex items-center justify-center py-10 px-4">
         <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl">
           <h2 className="text-3xl font-bold text-center text-green-600 mb-6">
@@ -213,7 +212,6 @@ export default function UpdateProperty() {
         </div>
       </div>
 
-      {/* Footer */}
       <Footer />
     </>
   );

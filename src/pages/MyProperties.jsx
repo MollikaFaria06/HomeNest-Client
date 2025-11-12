@@ -87,9 +87,9 @@ export default function MyProperties() {
               />
               <div className="p-4">
                 <h3 className="text-lg text-orange-700 font-bold">{property.title}</h3>
-                <p className="text-gray-600"><strong>Type:</strong> {property.type}</p>
-                <p className="text-green-800 font-bold">${property.price.toLocaleString()}</p>
-                <p className="text-yellow-700">{property.location}</p>
+                <p className="text-blue-600"><strong>Category:</strong> {property.type}</p>
+                <p className="text-green-500 font-bold mt-1">${property.price.toLocaleString()}</p>
+                <p className="text-yellow-700  mt-1">{property.location}</p>
                 <p className="text-sm text-purple-700 mt-1">
                   Posted on: {new Date(property.createdAt).toLocaleDateString("en-GB")}
                 </p>
