@@ -1,16 +1,19 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Navbar from './Navbar';
-import Footer from './Footer';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import { Outlet, useLocation } from 'react-router-dom';
 
 export default function MainLayout() {
+  const location = useLocation();
+
+  
+  const hideLayout = location.pathname === '/404';
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-1">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
+    <>
+      {!hideLayout && <Navbar />}
+      <Outlet />
+      {!hideLayout && <Footer />}
+    </>
   );
 }
