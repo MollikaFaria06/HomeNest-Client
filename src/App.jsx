@@ -13,6 +13,7 @@ import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import PropertyDetails from './pages/PropertyDetails';
 import { Toaster } from 'react-hot-toast';
+import UpdateProperty from './pages/UpdateProperty';
 
 function App() {
   const location = useLocation();
@@ -54,6 +55,14 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+        path="/update-property/:id"
+        element={
+          <PrivateRoute>
+            <UpdateProperty />
+          </PrivateRoute>
+        }
+      />
         <Route
           path="/my-ratings"
           element={
