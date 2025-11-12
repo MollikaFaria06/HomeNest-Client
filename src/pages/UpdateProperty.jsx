@@ -59,8 +59,10 @@ export default function UpdateProperty() {
           text: "Property updated successfully.",
           icon: "success",
           confirmButtonColor: "#16a34a",
-        });
-        navigate(`/properties/${id}`);
+        }).then(() => {
+            navigate(`/properties/${id}`);
+        })
+        
       } else {
         Swal.fire("Error", "Failed to update property.", "error");
       }

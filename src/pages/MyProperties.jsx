@@ -3,11 +3,13 @@ import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
+
 export default function MyProperties() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null); // optional, to disable delete button while deleting
 
   // Fetch only user's properties
   useEffect(() => {
@@ -24,9 +26,9 @@ export default function MyProperties() {
       });
   }, [user]);
 
-  // Delete Property
-  const handleDelete = (id) => {
-    Swal.fire({
+  // Delete Property with confirmation
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "This property will be permanently deleted.",
       icon: "warning",
@@ -34,30 +36,37 @@ export default function MyProperties() {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch(`http://localhost:5000/properties/${id}`, {
-          method: "DELETE",
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.deletedCount > 0) {
-              Swal.fire("Deleted!", "Property has been removed.", "success");
-              setProperties((prev) => prev.filter((p) => p._id !== id));
-            }
-            else {
-      Swal.fire("Error", "Failed to delete property.", "error");
-    }
-          });
-          
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        setDeletingId(id);
+        const res = await fetch(`http://localhost:5000/properties/${id}`, {
+          method: "DELETE",
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          Swal.fire("Deleted!", data.message || "Property has been removed.", "success");
+          // Remove deleted property from UI instantly
+          setProperties((prev) => prev.filter((prop) => prop._id !== id));
+        } else {
+          Swal.fire("Failed", data.message || "Could not delete property", "error");
+        }
+      } catch (err) {
+        console.error(err);
+        Swal.fire("Error", "Something went wrong", "error");
+      } finally {
+        setDeletingId(null);
+      }
+    }
   };
 
   if (loading) return <div className="text-center mt-10">Loading your properties...</div>;
 
   return (
-    <div className="max-w-6xl bg-yellow-200 mx-auto p-6">
+    <div className="max-w-full bg-yellow-200 mx-auto p-6">
       <h2 className="text-3xl font-bold mb-6 text-center">
         My <span className="text-green-600">Properties</span>
       </h2>
@@ -94,12 +103,17 @@ export default function MyProperties() {
                   </button>
                   <button
                     onClick={() => handleDelete(property._id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    disabled={deletingId === property._id} // disable button while deleting
+                    className={`px-3 py-1 rounded text-white ${
+                      deletingId === property._id
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-red-500 hover:bg-red-600"
+                    }`}
                   >
-                    Delete
+                    {deletingId === property._id ? "Deleting..." : "Delete"}
                   </button>
                   <Link
-                    to={`/properties/${property._id}`}
+                    to={`/property/${property._id}`}
                     className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                   >
                     View
