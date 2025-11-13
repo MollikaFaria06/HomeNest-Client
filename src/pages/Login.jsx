@@ -39,9 +39,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-200 px-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center text-green-600 mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-950 via-teal-900 to-black px-4">
+      <div className="bg-black/60 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-md border border-green-800/40 text-white">
+        <h2 className="text-3xl font-bold text-center text-green-400 mb-6">
           Login Here
         </h2>
 
@@ -52,11 +52,10 @@ export default function Login() {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className="border-2 border-gray-400 p-2 w-full rounded"
+            className="border border-green-700 bg-black/50 p-2 w-full rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
             required
           />
 
-          {/* Password with eye toggle */}
           <div className="relative">
             <input
               name="password"
@@ -64,11 +63,11 @@ export default function Login() {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="border-2 border-gray-400 p-2 w-full rounded pr-10"
+              className="border border-green-700 bg-black/50 p-2 w-full rounded pr-10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
             <span
-              className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600"
+              className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-300"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
@@ -77,26 +76,25 @@ export default function Login() {
 
           <button
             type="submit"
-            className="btn w-full bg-green-600 text-white text-lg hover:bg-green-700 border-2 p-2 rounded"
+            className="w-full bg-green-500 text-white text-lg hover:bg-green-600 py-2 rounded transition"
           >
             Login
           </button>
         </form>
 
-        {/* Google Login */}
         <button
           onClick={handleGoogleLogin}
-          className="btn btn-outline w-full mt-6 flex items-center justify-center gap-2 border rounded p-2"
+          className="w-full mt-6 flex items-center justify-center gap-2 border border-green-700 rounded p-2 hover:bg-green-700 transition"
         >
           <FcGoogle size={20} />
           Continue with Google
         </button>
 
-        <p className="text-center text-sm mt-4">
+        <p className="text-center text-sm mt-4 text-gray-300">
           Don’t have an account?{" "}
           <Link
             to="/register"
-            className="text-green-600 font-semibold hover:underline"
+            className="text-green-400 font-semibold hover:underline"
           >
             Register
           </Link>

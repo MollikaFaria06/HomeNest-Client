@@ -18,7 +18,7 @@ import UpdateProperty from './pages/UpdateProperty';
 function App() {
   const location = useLocation();
 
-  // detect if current route doesn't match any of your defined paths
+  
   const is404Page =
     !(
       location.pathname === '/' ||
@@ -82,7 +82,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* 404 route */}
+        
         <Route path="*" element={<NotFound />} />
       </Routes>
 

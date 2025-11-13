@@ -3,15 +3,13 @@ import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-
 export default function MyProperties() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [deletingId, setDeletingId] = useState(null); 
+  const [deletingId, setDeletingId] = useState(null);
 
-  // Fetch only user's properties
   useEffect(() => {
     if (!user?.email) return;
     fetch(`http://localhost:5000/user-properties?email=${user.email}`)
@@ -26,7 +24,6 @@ export default function MyProperties() {
       });
   }, [user]);
 
-  // Delete Property with confirmation
   const handleDelete = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -49,7 +46,6 @@ export default function MyProperties() {
 
         if (res.ok) {
           Swal.fire("Deleted!", data.message || "Property has been removed.", "success");
-          // Remove deleted property from UI instantly
           setProperties((prev) => prev.filter((prop) => prop._id !== id));
         } else {
           Swal.fire("Failed", data.message || "Could not delete property", "error");
@@ -63,35 +59,42 @@ export default function MyProperties() {
     }
   };
 
-  if (loading) return <div className="text-center mt-10">Loading your properties...</div>;
+  if (loading)
+    return <div className="text-center mt-10 text-lg text-gray-300">Loading your properties...</div>;
 
   return (
-    <div className="max-w-full bg-yellow-200 mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-6 text-center">
-        My <span className="text-green-600">Properties</span>
+    <div className="min-h-screen bg-gradient-to-br from-green-950 via-teal-900 to-black p-6">
+      <h2 className="text-4xl font-bold mb-8 text-center text-green-400">
+        My <span className="text-teal-300">Properties</span>
       </h2>
 
       {properties.length === 0 ? (
-        <p className="text-center text-gray-600">You haven’t added any properties yet.</p>
+        <p className="text-center text-gray-300">You haven’t added any properties yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((property) => (
             <div
               key={property._id}
-              className="bg-black shadow-md rounded-lg overflow-hidden border"
+              className="bg-black rounded-2xl shadow-lg overflow-hidden hover:scale-[1.02] transition-transform duration-300"
             >
               <img
                 src={property.image}
                 alt={property.title}
-                className="w-full h-48 object-cover"
+                className="w-full h-56 object-cover"
               />
               <div className="p-4">
-                <h3 className="text-lg text-orange-600 font-bold">{property.title}</h3>
-                <p className="text-blue-600"><strong>Category:</strong> {property.type}</p>
-                <p className="text-green-500 font-bold mt-1">${property.price.toLocaleString()}</p>
-                <p className="text-yellow-500  mt-1">{property.location}</p>
-                <p className="text-sm text-purple-500 mt-1">
-                  Posted on: {new Date(property.createdAt).toLocaleDateString("en-GB")}
+                <h3 className="text-lg text-red-500 font-bold">{property.title}</h3>
+                <p className="text-gray-300">
+                  <strong>Category:</strong>{" "}
+                  <span className="text-yellow-400">{property.type}</span>
+                </p>
+                <p className="text-green-500 font-bold mt-1">Price: 
+                  ${property.price.toLocaleString()}
+                </p>
+                <p className="text-blue-400 mt-1">Place: {property.location}</p>
+                <p className="text-sm text-purple-400 mt-1">
+                  Posted on:{" "}
+                  {new Date(property.createdAt).toLocaleDateString("en-GB")}
                 </p>
 
                 <div className="flex justify-between mt-4">
@@ -103,7 +106,7 @@ export default function MyProperties() {
                   </button>
                   <button
                     onClick={() => handleDelete(property._id)}
-                    disabled={deletingId === property._id} // disable button while deleting
+                    disabled={deletingId === property._id}
                     className={`px-3 py-1 rounded text-white ${
                       deletingId === property._id
                         ? "bg-gray-400 cursor-not-allowed"

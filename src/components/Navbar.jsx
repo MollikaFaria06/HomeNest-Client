@@ -39,7 +39,7 @@ export default function Navbar() {
       .toUpperCase();
 
     return (
-      <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-semibold">
+      <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-semibold shadow-md">
         {initials}
       </div>
     );
@@ -54,112 +54,115 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-black shadow-md py-2 px-8 lg:px-10">
-      <div className="flex items-center justify-between h-16">
-        {/* Logo */}
-        <div className="flex-shrink-0">
-          <button
-            onClick={() => navigate('/')}
-            className="text-3xl text-green-600 font-bold btn btn-ghost normal-case"
-          >
-            🏡HomeNest
-          </button>
-        </div>
-
-        {/* Nav Links */}
-        <div className="hidden lg:flex space-x-4">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive
-                    ? 'bg-green-600 text-black'
-                    : 'text-white hover:bg-green-600 hover:text-black transition-colors duration-300'
-                }`
-              }
+    <nav className="bg-gradient-to-r from-green-700 via-yellow-500 to-green-700 text-white shadow-lg sticky top-0 z-50">
+      <div className="bg-black/50 backdrop-blur-sm">
+        <div className="flex items-center justify-between h-16 px-6 lg:px-10">
+          
+       
+          <div className="flex-shrink-0">
+            <button
+              onClick={() => navigate('/')}
+              className="text-3xl font-extrabold text-green-500 hover:text-yellow-300 transition duration-300"
             >
-              {link.name}
-            </NavLink>
-          ))}
-        </div>
+              🏡 HomeNest
+            </button>
+          </div>
 
-        {/* User Section */}
-        <div className="flex items-center gap-2">
-          {!user ? (
-            <div className="hidden lg:flex gap-2">
-              <button
-                onClick={() => navigate('/login')}
-                className="px-5 py-2 text-white font-semibold text-lg bg-green-500 rounded-lg hover:bg-black transition-colors duration-300"
+        
+          <div className="hidden lg:flex space-x-4">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  `px-4 py-2 rounded-md text-sm font-semibold transition-colors duration-300 ${
+                    isActive
+                      ? 'bg-green-600 text-black shadow-md'
+                      : 'text-white hover:bg-yellow-500 hover:text-black hover:shadow-md'
+                  }`
+                }
               >
-                Login
-              </button>
-              <button
-                onClick={() => navigate('/register')}
-                className="px-5 py-2 text-white font-semibold text-lg bg-green-500 rounded-lg hover:bg-black transition-colors duration-300"
-              >
-                Signup
+                {link.name}
+              </NavLink>
+            ))}
+          </div>
+
+         
+          <div className="flex items-center gap-2">
+            {!user ? (
+              <div className="hidden lg:flex gap-3">
+                <button
+                  onClick={() => navigate('/login')}
+                  className="px-5 py-2 text-white font-semibold bg-green-500 rounded-lg hover:bg-black hover:text-yellow-400 transition"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => navigate('/register')}
+                  className="px-5 py-2 text-white font-semibold bg-yellow-500 rounded-lg hover:bg-black hover:text-yellow-400 transition"
+                >
+                  Signup
+                </button>
+              </div>
+            ) : (
+              <>
+              
+                <div className="hidden lg:flex items-center gap-3">
+                  <Avatar />
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-red-600 transition"
+                  >
+                    Log out
+                  </button>
+                </div>
+
+                 
+                <div className="hidden md:flex lg:hidden relative" ref={ddRef}>
+                  <button
+                    onClick={() => setDdOpen(!ddOpen)}
+                    className="btn btn-ghost btn-circle avatar p-0"
+                  >
+                    <Avatar />
+                  </button>
+                  {ddOpen && (
+                    <ul className="absolute right-0 mt-2 w-52 bg-black/80 backdrop-blur-lg shadow-lg rounded-md py-2 z-50">
+                      <li className="px-4 py-1 font-medium text-white">{user.displayName || 'No Name'}</li>
+                      <li className="px-4 py-1 text-xs text-pink-300 break-words">{user.email}</li>
+                      <li>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full px-4 py-2 mt-2 text-white bg-green-600 rounded-lg hover:bg-red-600 transition"
+                        >
+                          Log out
+                        </button>
+                      </li>
+                    </ul>
+                  )}
+                </div>
+              </>
+            )}
+
+           
+            <div className="lg:hidden">
+              <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-white hover:text-yellow-300 transition">
+                {mobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
               </button>
             </div>
-          ) : (
-            <>
-              {/* LG and above: avatar + logout inline */}
-              <div className="hidden lg:flex items-center gap-2">
-                <Avatar />
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 text-white font-semibold bg-green-500 rounded-lg text-lg hover:bg-red-500 transition-colors duration-300"
-                >
-                  Log out
-                </button>
-              </div>
-
-              {/* MD only: avatar + dropdown */}
-              <div className="hidden md:flex lg:hidden relative" ref={ddRef}>
-                <button
-                  onClick={() => setDdOpen(!ddOpen)}
-                  className="btn btn-ghost btn-circle avatar p-0"
-                >
-                  <Avatar />
-                </button>
-                {ddOpen && (
-                  <ul className="absolute right-0 mt-2 w-52 bg-black shadow-lg rounded-md py-2 z-50">
-                    <li className="px-4 py-1 font-medium text-white">{user.displayName || 'No Name'}</li>
-                    <li className="px-4 py-1 text-xs text-gray-400 break-words">{user.email}</li>
-                    <li>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full px-4 py-2 mt-2 text-white bg-green-500 rounded-lg hover:bg-red-500 transition-colors duration-300"
-                      >
-                        Log out
-                      </button>
-                    </li>
-                  </ul>
-                )}
-              </div>
-            </>
-          )}
-
-          {/* Mobile menu button */}
-          <div className="lg:hidden">
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="btn btn-ghost p-2 text-white">
-              {mobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+     
       {mobileOpen && (
-        <div className="lg:hidden mt-2 border-t border-gray-700 bg-black">
-          <ul className="flex flex-col p-2 space-y-1">
+        <div className="lg:hidden border-t border-white/20 bg-black/80 backdrop-blur-md">
+          <ul className="flex flex-col p-3 space-y-2">
             {navLinks.map((link) => (
               <li key={link.to}>
                 <NavLink
                   to={link.to}
                   onClick={() => setMobileOpen(false)}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-500 hover:text-black transition-colors duration-300"
+                  className="block px-4 py-2 rounded-md text-white font-medium hover:bg-green-500 hover:text-white transition"
                 >
                   {link.name}
                 </NavLink>
@@ -170,13 +173,13 @@ export default function Navbar() {
               <div className="flex gap-2 px-2 pt-2">
                 <button
                   onClick={() => { navigate('/login'); setMobileOpen(false); }}
-                  className="flex-1 px-4 py-2 text-white font-semibold text-xl bg-green-500 rounded-lg hover:bg-green-700 transition-colors duration-300"
+                  className="flex-1 px-4 py-2 text-white font-semibold bg-green-600 rounded-lg hover:bg-green-700 transition"
                 >
                   Login
                 </button>
                 <button
                   onClick={() => { navigate('/register'); setMobileOpen(false); }}
-                  className="flex-1 px-4 py-2 text-white font-semibold text-xl bg-green-500 rounded-lg hover:bg-green-700 transition-colors duration-300"
+                  className="flex-1 px-4 py-2 text-white font-semibold bg-yellow-500 rounded-lg hover:bg-yellow-600 transition"
                 >
                   Signup
                 </button>
@@ -192,7 +195,7 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={() => { handleLogout(); setMobileOpen(false); }}
-                  className="mt-2 w-full bg-green-500 text-lg text-white py-2 rounded-lg hover:bg-red-500 transition-colors duration-300"
+                  className="mt-2 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-red-600 transition"
                 >
                   Log out
                 </button>

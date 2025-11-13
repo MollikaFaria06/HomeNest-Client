@@ -26,26 +26,26 @@ export default function ExtraSection1() {
   ];
 
   return (
-    <section className="bg-yellow-200 py-16">
+    <section className="bg-gradient-to-r from-yellow-600 via-teal-800 to-green-900 py-16 text-white">
       <div className="max-w-6xl mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-8">
-          What Our <span className="text-green-600">Clients Say</span>
+        <h2 className="text-3xl text-yellow-300 font-bold mb-8">
+          What Our <span className="text-green-400">Clients Say</span>
         </h2>
-        <div className="grid gap-8  md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-3">
           {testimonials.map((t, index) => (
             <div
               key={index}
-              className="p-6 bg-gray-50 rounded-xl shadow hover:shadow-lg transition"
+              className="p-6 bg-black/60 backdrop-blur-md rounded-xl shadow-lg hover:shadow-xl transition"
             >
               <div className="flex justify-center mb-4">
                 <img
                   src={t.image}
                   alt={t.name}
-                  className="w-16 h-16 rounded-full border-2 border-green-500"
+                  className="w-16 h-16 rounded-full border-2 border-green-400"
                 />
               </div>
-              <p className="text-gray-600 italic mb-3">“{t.comment}”</p>
-              <h3 className="font-semibold text-green-700">{t.name}</h3>
+              <p className="text-gray-200 italic mb-3">“{t.comment}”</p>
+              <h3 className="font-semibold text-green-300">{t.name}</h3>
             </div>
           ))}
         </div>

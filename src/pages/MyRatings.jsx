@@ -41,28 +41,39 @@ export default function MyRatings() {
       });
   }, [user]);
 
-  if (loading) return <p>Loading your ratings...</p>;
-  if (!ratings.length) return <p>You have not rated any properties yet.</p>;
+  if (loading) return <p className="text-center mt-10 text-gray-300">Loading your ratings...</p>;
+  if (!ratings.length)
+    return (
+      <p className="text-center mt-10 text-gray-400 text-lg">
+        You have not rated any properties yet.
+      </p>
+    );
 
   return (
-    <div className="p-6 bg-yellow-200 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">My Ratings & Reviews</h1>
+    <div className="p-6 min-h-screen bg-gradient-to-br from-green-950 via-teal-900 to-black text-white">
+      <h1 className="text-4xl font-bold mb-8 text-center text-green-400">
+        My <span className="text-teal-300">Ratings & <span className="text-yellow-300">Reviews</span></span>
+      </h1>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {ratings.map((r, idx) => (
-          <div key={idx} className="bg-black rounded-lg shadow-md overflow-hidden">
+          <div
+            key={idx}
+            className="bg-black/70 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:scale-[1.02] transition-transform duration-300"
+          >
             {r.propertyThumbnail && (
               <img
                 src={r.propertyThumbnail}
                 alt={r.propertyName}
-                className="w-full h-48 object-cover"
+                className="w-full h-52 object-cover"
               />
             )}
             <div className="p-4">
-              <h2 className="text-xl font-semibold text-red-500 mb-1">{r.propertyName}</h2>
+              <h2 className="text-xl font-semibold text-green-400 mb-2">{r.propertyName}</h2>
               <Rating style={{ maxWidth: 120 }} value={r.rating} readOnly />
-              <p className="text-blue-500 mb-1">{r.reviewText}</p>
-              <p className="text-green-500 text-sm mb-1">Reviewed by: {user?.email}</p>
-              <p className="text-orange-500 text-sm">
+              <p className="text-gray-300 mt-2 italic">Comment: “{r.reviewText}”</p>
+              <p className="text-sm text-blue-400 mt-2">Reviewed by: {user?.email}</p>
+              <p className="text-sm text-yellow-400">
                 Date: {new Date(r.createdAt).toLocaleDateString()}
               </p>
             </div>

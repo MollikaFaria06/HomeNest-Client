@@ -21,21 +21,27 @@ export default function AllProperties() {
       });
   }, [search, sort]);
 
-  if (loading) return <p>Loading properties...</p>;
+  if (loading) return <p className="text-center mt-10 text-lg text-gray-300">Loading properties...</p>;
 
   return (
-    <div className="p-6 bg-yellow-200 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">All Properties</h1>
+    <div className="p-6 min-h-screen bg-gradient-to-br from-green-950 via-teal-900 to-black">
+      <h1 className="text-4xl font-bold text-center mb-8 text-green-400">
+        All <span className="text-teal-300">Properties</span>
+      </h1>
 
-      <div className="flex mb-6 justify-between gap-4">
+      <div className="flex mb-6 justify-between gap-4 flex-wrap">
         <input
           type="text"
           placeholder="Search by Property Name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border-2 w-2/3  border-green-300 bg-green-100 text-black px-2  py-1 rounded"
+          className="border-2 w-full md:w-2/3 border-green-600 bg-black/30 text-white placeholder-gray-400 px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
         />
-        <select value={sort} onChange={(e) => setSort(e.target.value)} className="border-2  px-2 py-1 w-48 border-green-300 bg-green-100 text-black  rounded">
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="border-2 w-full md:w-48 border-green-600 bg-black/30 text-white px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
           <option value="">Sort by</option>
           <option value="price-asc">Price ↑</option>
           <option value="price-desc">Price ↓</option>
@@ -46,14 +52,23 @@ export default function AllProperties() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {properties.map((property) => (
-          <div key={property._id} className="bg-black rounded-lg shadow-md overflow-hidden">
+          <div
+            key={property._id}
+            className="bg-black rounded-2xl shadow-lg overflow-hidden hover:scale-[1.02] transition-transform duration-300"
+          >
             <img src={property.image} alt={property.title} className="w-full h-64 object-cover" />
             <div className="p-4">
-              <h2 className="text-xl text-orange-600 font-semibold mb-1">{property.title}</h2>
-              <p className="text-blue-700 font-semibold mb-1">Category: {property.type}</p>
-              <p className="text-green-600 font-bold mb-1">Price: ${property.price.toLocaleString()}</p>
-              <p className="text-yellow-600 font-semibold mb-2">Location: {property.location}</p>
-              <p className="text-purple-600 font-semibold mb-2">Posted by: {property.owner.name}</p>
+              <h2 className="text-xl text-red-500 font-semibold mb-1">{property.title}</h2>
+              <p className="text-gray-300 mb-1">
+                Category: <span className="text-yellow-400">{property.type}</span>
+              </p>
+              <p className="text-green-500 font-bold mb-1">
+                Price: ${property.price.toLocaleString()}
+              </p>
+              <p className="text-blue-400 font-medium mb-2">Location: {property.location}</p>
+              <p className="text-purple-400 font-medium mb-2">
+                Posted by: {property.owner.name}
+              </p>
               <button
                 onClick={() => navigate(`/property/${property._id}`)}
                 className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors"

@@ -14,10 +14,12 @@ export default function ExtraSection2() {
   };
 
   return (
-    <section className="bg-gradient-to-r from-green-600 to-yellow-500 py-16 text-white">
+    <section className="bg-gradient-to-r from-green-900 via-teal-800 to-yellow-700 py-36 text-white">
       <div className="max-w-5xl mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-4">Join the HomeNest Community</h2>
-        <p className="mb-6 text-lg">
+        <h2 className="text-3xl font-bold mb-4 text-yellow-300">
+          Join the HomeNest Community
+        </h2>
+        <p className="mb-6 text-lg text-gray-200">
           Subscribe to get the latest property updates, offers, and expert tips
           directly in your inbox.
         </p>
