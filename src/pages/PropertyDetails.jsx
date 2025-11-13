@@ -93,13 +93,13 @@ export default function PropertyDetails() {
       <p className='text-red-500'><strong>Owner Email: </strong>{property.owner.email}</p>
 
       <div className="bg-white p-4 rounded-lg shadow-md mt-4">
-        <h2 className="text-2xl font-bold mb-4">Add Your Reviews and Ratings</h2>
+        <h2 className="text-2xl text-black font-bold mb-4">Add Your Reviews and Ratings</h2>
         <Rating style={{ maxWidth: 180 }} value={newRating} onChange={setNewRating} />
         <textarea
           placeholder="Write your review..."
           value={newReview}
           onChange={(e) => setNewReview(e.target.value)}
-          className="border rounded px-2 py-1 w-full my-2"
+          className="border border-gray-400 rounded px-2 py-1 w-full my-2"
         />
         <button
           onClick={handleSubmitReview}
