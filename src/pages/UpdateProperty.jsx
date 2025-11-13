@@ -91,7 +91,7 @@ export default function UpdateProperty() {
           </h2>
 
           <form onSubmit={handleUpdate} className="space-y-4">
-            {/* Property Name */}
+            
             <div>
               <label className="block font-semibold mb-1">Property Name</label>
               <input
@@ -105,7 +105,7 @@ export default function UpdateProperty() {
               />
             </div>
 
-            {/* Description */}
+         
             <div>
               <label className="block font-semibold mb-1">Description</label>
               <textarea
@@ -118,7 +118,7 @@ export default function UpdateProperty() {
               ></textarea>
             </div>
 
-            {/* Category */}
+           
             <div>
               <label className="block font-semibold mb-1">Category</label>
               <select
@@ -134,7 +134,7 @@ export default function UpdateProperty() {
               </select>
             </div>
 
-            {/* Price */}
+           
             <div>
               <label className="block font-semibold mb-1">Price (in BDT)</label>
               <input
@@ -148,7 +148,7 @@ export default function UpdateProperty() {
               />
             </div>
 
-            {/* Location */}
+           
             <div>
               <label className="block font-semibold mb-1">Location</label>
               <input
@@ -162,7 +162,7 @@ export default function UpdateProperty() {
               />
             </div>
 
-            {/* Image URL */}
+           
             <div>
               <label className="block font-semibold mb-1">Image URL</label>
               <input
@@ -176,7 +176,7 @@ export default function UpdateProperty() {
               />
             </div>
 
-            {/* User Info */}
+           
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block font-semibold mb-1">User Name</label>
@@ -198,7 +198,6 @@ export default function UpdateProperty() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={updating}
