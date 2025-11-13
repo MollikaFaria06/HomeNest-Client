@@ -1,40 +1,77 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import axios from "axios";
 
 export default function Login() {
-  const { loginUser, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  const handleBackendLogin = async (idToken) => {
+    try {
+      // Send Firebase token to backend for verification & get user data
+      const res = await axios.post("https://home-nest-server-silk.vercel.app/api/auth/login", {}, {
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+    } catch (err) {
+      console.error(err);
+      toast.error("Backend login failed");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    const auth = getAuth();
     try {
-      await loginUser(formData.email, formData.password);
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      const user = userCredential.user;
+      const idToken = await user.getIdToken();
+
+      localStorage.setItem("token", idToken); // Firebase token
+
+      await handleBackendLogin(idToken); // call backend with token
+
       toast.success("Login successful!");
       navigate(from, { replace: true });
     } catch (err) {
       toast.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
+    setLoading(true);
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
     try {
-      await loginWithGoogle();
+      const userCredential = await signInWithPopup(auth, provider);
+      const user = userCredential.user;
+      const idToken = await user.getIdToken();
+
+      localStorage.setItem("token", idToken);
+
+      await handleBackendLogin(idToken);
+
       toast.success("Logged in with Google!");
       navigate(from, { replace: true });
     } catch (err) {
       toast.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,15 +113,17 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full bg-green-500 text-white text-lg hover:bg-green-600 py-2 rounded transition"
+            disabled={loading}
+            className="w-full bg-green-500 text-white text-lg hover:bg-green-600 py-2 rounded transition disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
         <button
           onClick={handleGoogleLogin}
-          className="w-full mt-6 flex items-center justify-center gap-2 border border-green-700 rounded p-2 hover:bg-green-700 transition"
+          disabled={loading}
+          className="w-full mt-6 flex items-center justify-center gap-2 border border-green-700 rounded p-2 hover:bg-green-700 transition disabled:opacity-50"
         >
           <FcGoogle size={20} />
           Continue with Google

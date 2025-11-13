@@ -21,18 +21,28 @@ export default function UpdateProperty() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
+  const token = localStorage.getItem("token"); // Firebase token
+
   useEffect(() => {
-    fetch(`http://localhost:5000/properties/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchProperty = async () => {
+      try {
+        const res = await fetch(`https://home-nest-server-silk.vercel.app/properties/${id}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
         setProperty(data);
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error loading property:", err);
+        Swal.fire("Error", "Failed to load property data.", "error");
+      } finally {
         setLoading(false);
-      });
-  }, [id]);
+      }
+    };
+
+    fetchProperty();
+  }, [id, token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,9 +55,12 @@ export default function UpdateProperty() {
 
     setUpdating(true);
     try {
-      const res = await fetch(`http://localhost:5000/properties/${id}`, {
+      const res = await fetch(`https://home-nest-server-silk.vercel.app/properties/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify(property),
       });
 
@@ -91,7 +104,7 @@ export default function UpdateProperty() {
           </h2>
 
           <form onSubmit={handleUpdate} className="space-y-4">
-            
+            {/* Form fields remain the same */}
             <div>
               <label className="block font-semibold mb-1">Property Name</label>
               <input
@@ -105,7 +118,6 @@ export default function UpdateProperty() {
               />
             </div>
 
-         
             <div>
               <label className="block font-semibold mb-1">Description</label>
               <textarea
@@ -118,7 +130,6 @@ export default function UpdateProperty() {
               ></textarea>
             </div>
 
-           
             <div>
               <label className="block font-semibold mb-1">Category</label>
               <select
@@ -134,7 +145,6 @@ export default function UpdateProperty() {
               </select>
             </div>
 
-           
             <div>
               <label className="block font-semibold mb-1">Price (in BDT)</label>
               <input
@@ -148,7 +158,6 @@ export default function UpdateProperty() {
               />
             </div>
 
-           
             <div>
               <label className="block font-semibold mb-1">Location</label>
               <input
@@ -162,7 +171,6 @@ export default function UpdateProperty() {
               />
             </div>
 
-           
             <div>
               <label className="block font-semibold mb-1">Image URL</label>
               <input
@@ -176,7 +184,6 @@ export default function UpdateProperty() {
               />
             </div>
 
-           
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block font-semibold mb-1">User Name</label>

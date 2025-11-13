@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Rating } from '@smastrom/react-rating';
 import '@smastrom/react-rating/style.css';
 import { AuthContext } from '../context/AuthContext';
+import api from '../api'; // Axios instance
 
 export default function MyRatings() {
   const { user } = useContext(AuthContext);
@@ -14,14 +15,16 @@ export default function MyRatings() {
       return;
     }
 
-    fetch(`http://localhost:5000/my-ratings?email=${user.email}`)
-      .then(res => res.json())
-      .then(async (data) => {
+    const fetchRatings = async () => {
+      try {
+        // 1️⃣ Get all reviews submitted by the logged-in user
+        const { data: reviews } = await api.get('/my-ratings'); // JWT auto attach
+
+        // 2️⃣ Fetch property details for each review
         const ratingsWithProperty = await Promise.all(
-          data.map(async (review) => {
+          reviews.map(async (review) => {
             try {
-              const propertyRes = await fetch(`http://localhost:5000/properties/${review.propertyId}`);
-              const property = await propertyRes.json();
+              const { data: property } = await api.get(`/properties/${review.propertyId}`);
               return {
                 ...review,
                 propertyName: property.title || 'Unknown Property',
@@ -32,16 +35,20 @@ export default function MyRatings() {
             }
           })
         );
+
         setRatings(ratingsWithProperty);
+      } catch (err) {
+        console.error('Error fetching ratings:', err);
+      } finally {
         setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchRatings();
   }, [user]);
 
-  if (loading) return <p className="text-center mt-10 text-gray-300">Loading your ratings...</p>;
+  if (loading)
+    return <p className="text-center mt-10 text-gray-300">Loading your ratings...</p>;
   if (!ratings.length)
     return (
       <p className="text-center mt-10 text-gray-400 text-lg">

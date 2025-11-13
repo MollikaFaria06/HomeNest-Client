@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import api from "../api"; // Axios instance
 
 export default function MyProperties() {
   const { user } = useAuth();
@@ -12,16 +13,20 @@ export default function MyProperties() {
 
   useEffect(() => {
     if (!user?.email) return;
-    fetch(`http://localhost:5000/user-properties?email=${user.email}`)
-      .then((res) => res.json())
-      .then((data) => {
+
+    const fetchProperties = async () => {
+      setLoading(true);
+      try {
+        const { data } = await api.get("/user-properties"); // JWT auto attach
         setProperties(data);
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error fetching properties:", err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProperties();
   }, [user]);
 
   const handleDelete = async (id) => {
@@ -38,21 +43,12 @@ export default function MyProperties() {
     if (result.isConfirmed) {
       try {
         setDeletingId(id);
-        const res = await fetch(`http://localhost:5000/properties/${id}`, {
-          method: "DELETE",
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-          Swal.fire("Deleted!", data.message || "Property has been removed.", "success");
-          setProperties((prev) => prev.filter((prop) => prop._id !== id));
-        } else {
-          Swal.fire("Failed", data.message || "Could not delete property", "error");
-        }
+        const { data } = await api.delete(`/properties/${id}`); // JWT auto attach
+        Swal.fire("Deleted!", data.message || "Property has been removed.", "success");
+        setProperties((prev) => prev.filter((prop) => prop._id !== id));
       } catch (err) {
         console.error(err);
-        Swal.fire("Error", "Something went wrong", "error");
+        Swal.fire("Error", err.response?.data?.message || "Something went wrong", "error");
       } finally {
         setDeletingId(null);
       }
@@ -88,13 +84,12 @@ export default function MyProperties() {
                   <strong>Category:</strong>{" "}
                   <span className="text-yellow-400">{property.type}</span>
                 </p>
-                <p className="text-green-500 font-bold mt-1">Price: 
-                  ${property.price.toLocaleString()}
+                <p className="text-green-500 font-bold mt-1">
+                  Price: ${property.price.toLocaleString()}
                 </p>
                 <p className="text-blue-400 mt-1">Place: {property.location}</p>
                 <p className="text-sm text-purple-400 mt-1">
-                  Posted on:{" "}
-                  {new Date(property.createdAt).toLocaleDateString("en-GB")}
+                  Posted on: {new Date(property.createdAt).toLocaleDateString("en-GB")}
                 </p>
 
                 <div className="flex justify-between mt-4">

@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { updateProfile } from "firebase/auth";
-import { auth } from "../firebase/firebase.config";
+import { getAuth, updateProfile, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
 import toast from "react-hot-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
+import axios from "axios";
 
 export default function Register() {
-  const { registerUser, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -17,39 +15,87 @@ export default function Register() {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  // Send Firebase token to backend
+  const handleBackendRegister = async (idToken) => {
+    try {
+      const res = await axios.post(
+        "https://home-nest-server-silk.vercel.app/api/auth/register",
+        {},
+        { headers: { Authorization: `Bearer ${idToken}` } }
+      );
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+    } catch (err) {
+      console.error(err);
+      toast.error("Backend registration failed");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     const { name, email, photoURL, password } = formData;
 
-    // Password Validation
-    if (password.length < 6)
-      return toast.error("Password must be at least 6 characters");
-    if (!/[A-Z]/.test(password))
-      return toast.error("Must contain an Uppercase letter in the password");
-    if (!/[a-z]/.test(password))
-      return toast.error("Must contain a Lowercase letter in the password");
+    // Password validation
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      setLoading(false);
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      toast.error("Password must contain an uppercase letter");
+      setLoading(false);
+      return;
+    }
+    if (!/[a-z]/.test(password)) {
+      toast.error("Password must contain a lowercase letter");
+      setLoading(false);
+      return;
+    }
 
+    const auth = getAuth();
     try {
-      const userCred = await registerUser(email, password);
+      // Firebase registration
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(auth.currentUser, { displayName: name, photoURL });
+
+      const idToken = await userCred.user.getIdToken();
+      localStorage.setItem("token", idToken);
+
+      // Send token to backend
+      await handleBackendRegister(idToken);
+
       toast.success("Registration successful!");
       navigate("/");
     } catch (err) {
       toast.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
+    setLoading(true);
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
     try {
-      await loginWithGoogle();
+      const userCred = await signInWithPopup(auth, provider);
+      const idToken = await userCred.user.getIdToken();
+      localStorage.setItem("token", idToken);
+
+      await handleBackendRegister(idToken);
+
       toast.success("Logged in with Google!");
       navigate("/");
     } catch (err) {
       toast.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -108,15 +154,17 @@ export default function Register() {
 
           <button
             type="submit"
-            className="w-full bg-green-500 text-white text-lg hover:bg-green-600 py-2 rounded transition"
+            disabled={loading}
+            className="w-full bg-green-500 text-white text-lg hover:bg-green-600 py-2 rounded transition disabled:opacity-50"
           >
-            Register
+            {loading ? "Processing..." : "Register"}
           </button>
         </form>
 
         <button
           onClick={handleGoogleLogin}
-          className="w-full mt-6 flex items-center justify-center gap-2 border border-green-700 rounded p-2 hover:bg-green-700 transition"
+          disabled={loading}
+          className="w-full mt-6 flex items-center justify-center gap-2 border border-green-700 rounded p-2 hover:bg-green-700 transition disabled:opacity-50"
         >
           <FcGoogle size={20} />
           Continue with Google

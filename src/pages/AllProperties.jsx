@@ -1,27 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api"; // Axios instance
 
 export default function AllProperties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [sort, setSort] = useState('');
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:5000/properties?search=${search}&sort=${sort}`)
-      .then(res => res.json())
-      .then(data => {
-        setProperties(data);
+    const fetchProperties = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get("/properties", {
+          params: { search, sort },
+        });
+        setProperties(res.data);
+      } catch (err) {
+        console.error("Error fetching properties:", err);
+      } finally {
         setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchProperties();
   }, [search, sort]);
 
-  if (loading) return <p className="text-center mt-10 text-lg text-gray-300">Loading properties...</p>;
+  if (loading)
+    return <p className="text-center mt-10 text-lg text-gray-300">Loading properties...</p>;
 
   return (
     <div className="p-6 min-h-screen bg-gradient-to-br from-green-950 via-teal-900 to-black">
@@ -63,11 +70,11 @@ export default function AllProperties() {
                 Category: <span className="text-yellow-400">{property.type}</span>
               </p>
               <p className="text-green-500 font-bold mb-1">
-                Price: ${property.price.toLocaleString()}
+                Price: ${property.price?.toLocaleString() || "N/A"}
               </p>
               <p className="text-blue-400 font-medium mb-2">Location: {property.location}</p>
               <p className="text-purple-400 font-medium mb-2">
-                Posted by: {property.owner.name}
+                Posted by: {property.owner?.name || "Unknown"}
               </p>
               <button
                 onClick={() => navigate(`/property/${property._id}`)}

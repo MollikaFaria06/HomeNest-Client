@@ -1,9 +1,12 @@
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import api from "../api"; // Axios instance
 
 export default function AddProperty() {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -24,12 +27,8 @@ export default function AddProperty() {
     if (!user) return Swal.fire("Login Required", "Please login first.", "warning");
 
     const propertyData = {
-      title: formData.title,
-      description: formData.description,
-      type: formData.type,
+      ...formData,
       price: parseFloat(formData.price),
-      location: formData.location,
-      image: formData.image,
       owner: {
         name: user?.displayName || user?.name || "Unknown User",
         email: user?.email,
@@ -39,33 +38,29 @@ export default function AddProperty() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/properties", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(propertyData),
+      const res = await api.post("/properties", propertyData);
+      Swal.fire({
+        title: "Success!",
+        text: "Property added successfully.",
+        icon: "success",
+        confirmButtonColor: "#16a34a",
       });
-
-      if (res.ok) {
-        Swal.fire({
-          title: "Success!",
-          text: "Property added successfully.",
-          icon: "success",
-          confirmButtonColor: "#16a34a",
-        });
-        setFormData({
-          title: "",
-          description: "",
-          type: "Rent",
-          price: "",
-          location: "",
-          image: "",
-        });
-      } else {
-        Swal.fire("Error", "Failed to add property.", "error");
-      }
+      setFormData({
+        title: "",
+        description: "",
+        type: "Rent",
+        price: "",
+        location: "",
+        image: "",
+      });
+      navigate("/all-properties"); // Redirect to all properties
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Something went wrong.", "error");
+      Swal.fire(
+        "Error",
+        err.response?.data?.message || "Failed to add property.",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -79,7 +74,7 @@ export default function AddProperty() {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-         
+          {/* Property fields */}
           <div>
             <label className="block font-semibold mb-1">Property Name</label>
             <input
@@ -93,7 +88,6 @@ export default function AddProperty() {
             />
           </div>
 
-          
           <div>
             <label className="block font-semibold mb-1">Description</label>
             <textarea
@@ -121,7 +115,6 @@ export default function AddProperty() {
             </select>
           </div>
 
-         
           <div>
             <label className="block font-semibold mb-1">Price (in BDT)</label>
             <input
@@ -135,7 +128,6 @@ export default function AddProperty() {
             />
           </div>
 
-         
           <div>
             <label className="block font-semibold mb-1">Location</label>
             <input
@@ -162,7 +154,7 @@ export default function AddProperty() {
             />
           </div>
 
-          
+          {/* Owner info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block font-semibold mb-1">User Name</label>
@@ -184,7 +176,6 @@ export default function AddProperty() {
             </div>
           </div>
 
-         
           <button
             type="submit"
             disabled={loading}

@@ -4,6 +4,7 @@ import { Rating } from '@smastrom/react-rating';
 import '@smastrom/react-rating/style.css';
 import { AuthContext } from '../context/AuthContext';
 import Swal from 'sweetalert2';
+import api from '../api'; // Axios instance
 
 export default function PropertyDetails() {
   const { id } = useParams();
@@ -16,45 +17,50 @@ export default function PropertyDetails() {
   const [newReview, setNewReview] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Fetch property details
   useEffect(() => {
-    fetch(`http://localhost:5000/properties/${id}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Property not found');
-        return res.json();
-      })
-      .then(data => {
+    const fetchProperty = async () => {
+      try {
+        const { data } = await api.get(`/properties/${id}`);
         setProperty(data);
-        setLoading(false);
-      })
-      .catch(err => {
+      } catch (err) {
         console.error(err);
         setProperty(null);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    fetchProperty();
   }, [id]);
 
+  // Fetch property reviews
   useEffect(() => {
-    fetch(`http://localhost:5000/reviews/${id}`)
-      .then(res => res.json())
-      .then(data => setReviews(data))
-      .catch(err => console.error(err));
+    const fetchReviews = async () => {
+      try {
+        const { data } = await api.get(`/reviews/${id}`);
+        setReviews(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchReviews();
   }, [id]);
 
   const handleSubmitReview = async () => {
-    if (!newReview || !user) return Swal.fire('Login Required', 'Please login first.', 'warning');
+    if (!newReview || !user) {
+      return Swal.fire('Login Required', 'Please login first.', 'warning');
+    }
+
     setSubmitting(true);
     try {
-      await fetch('http://localhost:5000/reviews', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          propertyId: id,
-          rating: newRating,
-          reviewText: newReview,
-          reviewerName: user.name || user.displayName,
-          reviewerEmail: user.email,
-        }),
+      await api.post('/reviews', {
+        propertyId: id,
+        rating: newRating,
+        reviewText: newReview,
+        reviewerName: user.name || user.displayName,
+        reviewerEmail: user.email,
       });
+
       Swal.fire('Success', 'Review submitted!', 'success');
       navigate('/my-ratings');
     } catch (err) {
@@ -65,56 +71,74 @@ export default function PropertyDetails() {
     }
   };
 
-  return (
-    <>
-     
-      <div className="min-h-screen p-6 bg-gradient-to-br from-green-950 via-teal-900 to-black text-white">
-        {loading ? (
-          <p className="text-center mt-10 text-lg text-gray-300">Loading properties...</p>
-        ) : !property ? (
-          <p className="text-center mt-10 text-lg text-gray-300">Property not found.</p>
-        ) : (
-          <>
-            <h1 className="text-3xl text-orange-700 font-bold mb-4">{property.title}</h1>
-            <img
-              src={property.image}
-              alt={property.title}
-              className="w-96 h-96 object-cover mb-4 rounded-lg"
-            />
-            <p className="text-blue-400 mb-1 font-bold">Category: {property.type}</p>
-            <p className="text-red-400 font-bold mb-1">
-              <strong>Price:</strong> ${property.price?.toLocaleString() || 'N/A'}
-            </p>
-            <p className="text-yellow-400 mb-1"><strong>Location:</strong> {property.location}</p>
-            <p className="text-pink-400 mb-1"><strong>Description:</strong> {property.description}</p>
-            <p className="text-purple-300 mb-1">
-              <strong>Posted on:</strong> {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : 'N/A'}
-            </p>
-            <p className='text-orange-300'><strong>Posted by: </strong>{property.owner.name}</p>
-            <p className='text-red-500'><strong>Owner Email: </strong>{property.owner.email}</p>
+  if (loading)
+    return (
+      <p className="text-center mt-10 text-lg text-gray-300">
+        Loading property details...
+      </p>
+    );
 
-            <div className="bg-black/60 p-4 rounded-lg shadow-md mt-4">
-              <h2 className="text-2xl text-green-400 font-bold mb-4">Add Your Reviews and Ratings</h2>
-              <Rating style={{ maxWidth: 180 }} value={newRating} onChange={setNewRating} />
-              <textarea
-                placeholder="Write your review..."
-                value={newReview}
-                onChange={(e) => setNewReview(e.target.value)}
-                className="border border-gray-400 rounded px-2 py-1 w-full my-2 bg-black/20 text-white placeholder-gray-300"
-              />
-              <button
-                onClick={handleSubmitReview}
-                disabled={submitting || !user}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-              >
-                Submit Review
-              </button>
-              {!user && <p className="text-red-500 mt-2">Please log in to submit a review.</p>}
-            </div>
-          </>
-        )}
+  if (!property)
+    return (
+      <p className="text-center mt-10 text-lg text-gray-300">
+        Property not found.
+      </p>
+    );
+
+  return (
+    <div className="min-h-screen p-6 bg-gradient-to-br from-green-950 via-teal-900 to-black text-white">
+      <h1 className="text-3xl text-orange-700 font-bold mb-4">{property.title}</h1>
+      <img
+        src={property.image}
+        alt={property.title}
+        className="w-96 h-96 object-cover mb-4 rounded-lg"
+      />
+      <p className="text-blue-400 mb-1 font-bold">Category: {property.type}</p>
+      <p className="text-red-400 font-bold mb-1">
+        <strong>Price:</strong> ${property.price?.toLocaleString() || 'N/A'}
+      </p>
+      <p className="text-yellow-400 mb-1"><strong>Location:</strong> {property.location}</p>
+      <p className="text-pink-400 mb-1"><strong>Description:</strong> {property.description}</p>
+      <p className="text-purple-300 mb-1">
+        <strong>Posted on:</strong> {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : 'N/A'}
+      </p>
+      <p className='text-orange-300'><strong>Posted by: </strong>{property.owner.name}</p>
+      <p className='text-red-500'><strong>Owner Email: </strong>{property.owner.email}</p>
+
+      <div className="bg-black/60 p-4 rounded-lg shadow-md mt-4">
+        <h2 className="text-2xl text-green-400 font-bold mb-4">Add Your Reviews and Ratings</h2>
+        <Rating style={{ maxWidth: 180 }} value={newRating} onChange={setNewRating} />
+        <textarea
+          placeholder="Write your review..."
+          value={newReview}
+          onChange={(e) => setNewReview(e.target.value)}
+          className="border border-gray-400 rounded px-2 py-1 w-full my-2 bg-black/20 text-white placeholder-gray-300"
+        />
+        <button
+          onClick={handleSubmitReview}
+          disabled={submitting || !user}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        >
+          {submitting ? 'Submitting...' : 'Submit Review'}
+        </button>
+        {!user && <p className="text-red-500 mt-2">Please log in to submit a review.</p>}
       </div>
 
-    </>
+      {reviews.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-2xl text-teal-300 font-bold mb-4">Reviews</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {reviews.map((r, idx) => (
+              <div key={idx} className="bg-black/70 p-4 rounded-lg shadow-md">
+                <h4 className="text-lg text-green-400 font-semibold">{r.reviewerName}</h4>
+                <Rating style={{ maxWidth: 120 }} value={r.rating} readOnly />
+                <p className="text-gray-300 mt-1 italic">Comment: {r.reviewText}</p>
+                <p className="text-sm text-yellow-400">Date: {new Date(r.createdAt).toLocaleDateString()}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
