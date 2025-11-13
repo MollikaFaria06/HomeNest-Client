@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Rating } from '@smastrom/react-rating';
 import '@smastrom/react-rating/style.css';
 import { AuthContext } from '../context/AuthContext';
-import api from '../api'; // Axios instance
+import api from '../api';
 
 export default function MyRatings() {
   const { user } = useContext(AuthContext);
@@ -17,10 +17,8 @@ export default function MyRatings() {
 
     const fetchRatings = async () => {
       try {
-        // 1️⃣ Get all reviews submitted by the logged-in user
-        const { data: reviews } = await api.get('/my-ratings'); // JWT auto attach
+        const { data: reviews } = await api.get('/my-ratings');
 
-        // 2️⃣ Fetch property details for each review
         const ratingsWithProperty = await Promise.all(
           reviews.map(async (review) => {
             try {
@@ -47,13 +45,22 @@ export default function MyRatings() {
     fetchRatings();
   }, [user]);
 
+  
   if (loading)
-    return <p className="text-center mt-10 text-gray-300">Loading your ratings...</p>;
+    return (
+      <div className="p-6 min-h-screen bg-gradient-to-br from-green-950 via-teal-900 to-black flex items-center justify-center">
+        <p className="text-center text-gray-300 text-xl">Loading your ratings...</p>
+      </div>
+    );
+
+ 
   if (!ratings.length)
     return (
-      <p className="text-center mt-10 text-gray-400 text-lg">
-        You have not rated any properties yet.
-      </p>
+      <div className="p-6 min-h-screen bg-gradient-to-br from-green-950 via-teal-900 to-black flex items-center justify-center">
+        <p className="text-center text-gray-300 text-xl">
+          You have not rated any properties yet.
+        </p>
+      </div>
     );
 
   return (
