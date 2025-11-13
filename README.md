@@ -1,16 +1,105 @@
-# React + Vite
+# 🏠 HomeNest - Real Estate Property Management App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+HomeNest is a full-stack real estate web application that allows users to browse, add, update, and manage properties securely. It uses **React** for the frontend, **Firebase Authentication** for user management, and **Express + MongoDB** for the backend API. It lets property owners post rentals and sales, while users browse, search and filter properties by property name. 
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🔐 Authentication
+- Secure sign up and login using **Firebase Authentication**.
+- Private routes (only logged-in users can add or update properties).
 
-## Expanding the ESLint configuration
+### 🏡 Property Management
+- Add new properties with details (title, price, type, description, image, location, etc.).
+- View all properties in the **All Properties** page.
+- Update or delete your own properties.
+- View detailed property information on a **Property Details** page.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🌟 UI/UX
+- Fully responsive layout.
+- Built with **Tailwind CSS** for modern, clean styling.
+- Components are modular and reusable.
+
+---
+
+## 📁 Folder Structure
+
+HOMENEST-CLIENT/
+│
+├── src/
+│ ├── components/
+│ │ ├── home/
+│ │ │ ├── Banner.jsx
+│ │ │ ├── ExtraSection1.jsx
+│ │ │ ├── ExtraSection2.jsx
+│ │ │ ├── FeaturedProperties.jsx
+│ │ │ ├── WhyChooseUs.jsx
+│ │ ├── Footer.jsx
+│ │ ├── Navbar.jsx
+│ │ ├── MainLayout.jsx
+│ │ ├── PrivateRoute.jsx
+│ │ ├── PropertyCard.jsx
+│ │ ├── Spinner.jsx
+│ │
+│ ├── context/
+│ │ └── AuthContext.jsx
+│ │
+│ ├── firebase/
+│ │ └── firebase.config.js
+│ │
+│ ├── pages/
+│ │ ├── AddProperty.jsx
+│ │ ├── AllProperties.jsx
+│ │ ├── Home.jsx
+│ │ ├── Login.jsx
+│ │ ├── MyProperties.jsx
+│ │ ├── MyRatings.jsx
+│ │ ├── NotFound.jsx
+│ │ ├── PropertyDetails.jsx
+│ │ ├── Register.jsx
+│ │ ├── UpdateProperty.jsx
+│ │
+│ ├── App.css
+│ └── App.jsx
+│
+└── package.json
+
+
+
+---
+
+## 🧩 Tech Stack
+
+**Frontend**
+- React (Vite)
+- Tailwind CSS
+- Firebase Authentication
+- SweetAlert2
+
+**Backend**
+- Node.js
+- Express.js
+- MongoDB Atlas
+- Firebase Admin SDK (for server-side auth verification)
+- Dotenv for environment variables
+
+---
+
+## 🧠 Key API Endpoints
+
+| Method | Endpoint | Description |
+|--------|-----------|-------------|
+| `GET` | `/properties` | Get all properties |
+| `GET` | `/properties/:id` | Get property by ID |
+| `POST` | `/properties` | Add a new property |
+| `PUT` | `/properties/:id` | Update a property |
+| `DELETE` | `/properties/:id` | Delete a property |
+
+---
+
+## 💬 Author
+
+- 👩‍💻 Faria Alam
+- 🎓 CSE, Jagannath University, Dhaka
