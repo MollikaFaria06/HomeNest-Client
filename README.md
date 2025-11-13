@@ -7,6 +7,8 @@ Live Website Link1 : https://homenest-6904d.web.app/
 
 Live Website Link2 : https://homenest-6904d.firebaseapp.com/
 
+
+
 ---
 
 ## 🚀 Features
@@ -22,10 +24,10 @@ Live Website Link2 : https://homenest-6904d.firebaseapp.com/
 - Update or delete your own properties.
 - View detailed property information on a **Property Details** page.
 
-### 🌟 UI/UX
+### 🌟 UI/UX Design
 - Fully responsive layout.
 - Built with **Tailwind CSS** for modern, clean styling.
-- Components are modular and reusable.
+- Components are modular and reusable .
 
 
 ---
