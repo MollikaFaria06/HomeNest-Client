@@ -49,7 +49,7 @@ export default function MyRatings() {
       <h1 className="text-3xl font-bold mb-6">My Ratings & Reviews</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {ratings.map((r, idx) => (
-          <div key={idx} className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div key={idx} className="bg-black rounded-lg shadow-md overflow-hidden">
             {r.propertyThumbnail && (
               <img
                 src={r.propertyThumbnail}
@@ -58,11 +58,11 @@ export default function MyRatings() {
               />
             )}
             <div className="p-4">
-              <h2 className="text-xl font-semibold text-red-600 mb-1">{r.propertyName}</h2>
+              <h2 className="text-xl font-semibold text-red-500 mb-1">{r.propertyName}</h2>
               <Rating style={{ maxWidth: 120 }} value={r.rating} readOnly />
-              <p className="text-blue-700 mb-1">{r.reviewText}</p>
+              <p className="text-blue-500 mb-1">{r.reviewText}</p>
               <p className="text-green-500 text-sm mb-1">Reviewed by: {user?.email}</p>
-              <p className="text-orange-700 text-sm">
+              <p className="text-orange-500 text-sm">
                 Date: {new Date(r.createdAt).toLocaleDateString()}
               </p>
             </div>

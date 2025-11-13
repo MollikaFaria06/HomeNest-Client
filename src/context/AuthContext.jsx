@@ -17,25 +17,25 @@ export const AuthProvider = ({ children }) => {
 
   const provider = new GoogleAuthProvider();
 
-  // ✅ Register user 
+  // Register user 
   const registerUser = (email, password) => {
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  // ✅ Login user
+  // Login user
   const loginUser = (email, password) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // ✅ Google login
+  // Google login
   const loginWithGoogle = () => {
     return signInWithPopup(auth, provider);
   };
 
-  // ✅ Logout
+  // Logout
   const logout = () => signOut(auth);
 
-  // ✅ Track user
+  // Track user
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);

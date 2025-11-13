@@ -31,7 +31,7 @@ export default function ExtraSection1() {
         <h2 className="text-3xl font-bold mb-8">
           What Our <span className="text-green-600">Clients Say</span>
         </h2>
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8  md:grid-cols-3">
           {testimonials.map((t, index) => (
             <div
               key={index}

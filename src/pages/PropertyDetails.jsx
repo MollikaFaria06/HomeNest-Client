@@ -89,9 +89,11 @@ export default function PropertyDetails() {
         <strong>Posted on:</strong>{' '}
         {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : 'N/A'}
       </p>
+      <p className='text-orange-800'><strong>Posted by: </strong>{property.owner.name}</p>
+      <p className='text-red-500'><strong>Owner Email: </strong>{property.owner.email}</p>
 
       <div className="bg-white p-4 rounded-lg shadow-md mt-4">
-        <h2 className="text-2xl font-bold mb-4">Add Your Review</h2>
+        <h2 className="text-2xl font-bold mb-4">Add Your Reviews and Ratings</h2>
         <Rating style={{ maxWidth: 180 }} value={newRating} onChange={setNewRating} />
         <textarea
           placeholder="Write your review..."

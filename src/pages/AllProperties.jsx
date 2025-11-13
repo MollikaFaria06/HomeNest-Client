@@ -46,13 +46,14 @@ export default function AllProperties() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {properties.map((property) => (
-          <div key={property._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div key={property._id} className="bg-black rounded-lg shadow-md overflow-hidden">
             <img src={property.image} alt={property.title} className="w-full h-64 object-cover" />
             <div className="p-4">
               <h2 className="text-xl text-orange-600 font-semibold mb-1">{property.title}</h2>
               <p className="text-blue-700 font-semibold mb-1">Category: {property.type}</p>
               <p className="text-green-600 font-bold mb-1">Price: ${property.price.toLocaleString()}</p>
               <p className="text-yellow-600 font-semibold mb-2">Location: {property.location}</p>
+              <p className="text-purple-600 font-semibold mb-2">Posted by: {property.owner.name}</p>
               <button
                 onClick={() => navigate(`/property/${property._id}`)}
                 className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors"

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function PropertyCard({ property }) {
   return (
-    <div className="border rounded-lg shadow hover:shadow-lg p-4 bg-white flex flex-col">
+    <div className="border rounded-lg shadow hover:shadow-lg p-4 bg-black flex flex-col">
       <img
         src={property.image || "https://via.placeholder.com/400x200"}
         alt={property.title}
@@ -13,7 +13,7 @@ export default function PropertyCard({ property }) {
       <p className="text-blue-700">{property.location}</p>
 
       
-      <p className="text-black text-sm mt-2 mb-2 line-clamp-3">
+      <p className="text-white text-sm mt-2 mb-2 line-clamp-3">
         {property.description || "No description available."}
       </p>
 

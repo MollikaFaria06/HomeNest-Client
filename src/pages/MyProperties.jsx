@@ -9,7 +9,7 @@ export default function MyProperties() {
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [deletingId, setDeletingId] = useState(null); // optional, to disable delete button while deleting
+  const [deletingId, setDeletingId] = useState(null); 
 
   // Fetch only user's properties
   useEffect(() => {
@@ -78,7 +78,7 @@ export default function MyProperties() {
           {properties.map((property) => (
             <div
               key={property._id}
-              className="bg-white shadow-md rounded-lg overflow-hidden border"
+              className="bg-black shadow-md rounded-lg overflow-hidden border"
             >
               <img
                 src={property.image}
@@ -86,11 +86,11 @@ export default function MyProperties() {
                 className="w-full h-48 object-cover"
               />
               <div className="p-4">
-                <h3 className="text-lg text-orange-700 font-bold">{property.title}</h3>
+                <h3 className="text-lg text-orange-600 font-bold">{property.title}</h3>
                 <p className="text-blue-600"><strong>Category:</strong> {property.type}</p>
                 <p className="text-green-500 font-bold mt-1">${property.price.toLocaleString()}</p>
-                <p className="text-yellow-700  mt-1">{property.location}</p>
-                <p className="text-sm text-purple-700 mt-1">
+                <p className="text-yellow-500  mt-1">{property.location}</p>
+                <p className="text-sm text-purple-500 mt-1">
                   Posted on: {new Date(property.createdAt).toLocaleDateString("en-GB")}
                 </p>
 
