@@ -27,7 +27,7 @@ export default function Login() {
       localStorage.setItem("user", JSON.stringify(res.data.user));
     } catch (err) {
       console.error(err);
-      toast.error("Backend login failed");
+      
     }
   };
 
