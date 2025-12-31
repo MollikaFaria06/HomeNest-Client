@@ -48,8 +48,19 @@ Live Website Link2 : https://homenest-6904d.firebaseapp.com/
 - Dotenv for environment variables
 
 ---
+## 📦 npm Packages
 
-## 🧠 Key API Endpoints
+ **Frontend Packages**
+```bash
+npm install react react-dom react-router-dom
+npm install firebase
+npm install tailwindcss
+npm install sweetalert2
+
+
+---
+
+### 🧠 Key API Endpoints
 
 | Method | Endpoint | Description |
 |--------|-----------|-------------|
