@@ -97,7 +97,9 @@ npm install nodemon
 
 ---
 
-## 💬 Author
+### 👨‍💻 Author
 
-- 👩‍💻 Faria Alam
-- 🎓 CSE, Jagannath University, Dhaka
+-  Faria Alam
+-  Mern Stack Developer
+-  📧 Email:  fariamk007@gmail.com
+-  🔗 GitHub: https://github.com/mollikafaria06
