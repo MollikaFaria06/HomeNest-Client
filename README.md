@@ -56,7 +56,14 @@ npm install react react-dom react-router-dom
 npm install firebase
 npm install tailwindcss
 npm install sweetalert2
+```
 
+ **Backend Packages**
+ ```bash
+npm install express mongodb cors dotenv
+npm install firebase-admin
+npm install nodemon
+```
 
 ---
 
@@ -69,6 +76,24 @@ npm install sweetalert2
 | `POST` | `/properties` | Add a new property |
 | `PUT` | `/properties/:id` | Update a property |
 | `DELETE` | `/properties/:id` | Delete a property |
+
+---
+
+## 🚀 How to Run Locally
+
+### Clone repo
+- git clone https://github.com/mollikafaria06/HomeNest-Client.git
+- git clone https://github.com/MollikaFaria06/HomeNest-Server.git
+
+### Frontend
+- cd HomeNest-Client
+- npm install
+- npm run dev
+
+### Backend
+- cd HomeNest-Server
+- npm install
+- npm run start
 
 ---
 
