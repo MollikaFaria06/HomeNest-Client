@@ -8,7 +8,7 @@ export default function Footer() {
     <footer className="bg-gradient-to-t from-black via-gray-900 to-black border-t border-gray-800 mt-0">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-10 text-white">
         
-       
+        {/* Branding & Contact */}
         <div>
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-green-600 to-yellow-500 flex items-center justify-center text-white font-bold shadow-md">
@@ -29,10 +29,20 @@ export default function Footer() {
           </p>
         </div>
 
-       
+        {/* Quick Links */}
         <div>
           <div className="font-semibold text-lg mb-3 text-yellow-400">Quick Links</div>
           <ul className="space-y-2 text-sm">
+            <li>
+              <Link to="/" className="hover:text-yellow-400 transition">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/about" className="hover:text-yellow-400 transition">
+                About
+              </Link>
+            </li>
             <li>
               <Link to="/all-properties" className="hover:text-yellow-400 transition">
                 All Properties
@@ -56,6 +66,7 @@ export default function Footer() {
           </ul>
         </div>
 
+        {/* Social Media */}
         <div>
           <div className="font-semibold text-lg mb-3 text-yellow-400">Follow Us</div>
           <div className="flex gap-4">
@@ -98,6 +109,7 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Copyright */}
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-4 text-xs text-gray-400 text-center">
           © {new Date().getFullYear()} <span className="text-yellow-400 font-semibold">HomeNest</span>. All rights reserved.

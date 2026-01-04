@@ -1,6 +1,8 @@
+// src/pages/UpdateProperty.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import Swal from "sweetalert2";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -8,6 +10,7 @@ import Footer from "../components/Footer";
 export default function UpdateProperty() {
   const { id } = useParams();
   const { user } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
 
   const [property, setProperty] = useState({
@@ -21,16 +24,20 @@ export default function UpdateProperty() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
-  const token = localStorage.getItem("token"); // Firebase token
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchProperty = async () => {
+      setLoading(true);
       try {
-        const res = await fetch(`https://home-nest-server-silk.vercel.app/properties/${id}`, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-        });
+        const res = await fetch(
+          `https://home-nest-server-silk.vercel.app/properties/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = await res.json();
         setProperty(data);
       } catch (err) {
@@ -40,7 +47,6 @@ export default function UpdateProperty() {
         setLoading(false);
       }
     };
-
     fetchProperty();
   }, [id, token]);
 
@@ -51,18 +57,22 @@ export default function UpdateProperty() {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    if (!user) return Swal.fire("Login Required", "Please login first.", "warning");
+    if (!user)
+      return Swal.fire("Login Required", "Please login first.", "warning");
 
     setUpdating(true);
     try {
-      const res = await fetch(`https://home-nest-server-silk.vercel.app/properties/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(property),
-      });
+      const res = await fetch(
+        `https://home-nest-server-silk.vercel.app/properties/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(property),
+        }
+      );
 
       if (res.ok) {
         Swal.fire({
@@ -83,28 +93,59 @@ export default function UpdateProperty() {
     }
   };
 
+  // Spinner component
+  const Spinner = () => (
+    <div className="flex justify-center items-center min-h-[60vh]">
+      <div
+        className={`w-16 h-16 border-4 border-t-green-500 border-b-green-500 rounded-full animate-spin ${
+          theme === "dark" ? "border-gray-700" : "border-gray-300"
+        }`}
+      ></div>
+    </div>
+  );
+
   if (loading)
     return (
       <>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-950 via-teal-900 to-black">
-          <p className="text-white text-lg">Loading property data...</p>
+        
+        <div
+          className={`min-h-screen flex items-center justify-center transition-colors ${
+            theme === "dark"
+              ? "bg-gray-900 text-white"
+              : "bg-gradient-to-br from-green-950 via-teal-900 to-black text-white"
+          }`}
+        >
+          <Spinner />
         </div>
-        <Footer />
+       
       </>
     );
 
   return (
     <>
-      <Navbar />
-      <div className="min-h-screen flex items-center justify-center py-10 bg-gradient-to-br from-green-950 via-teal-900 to-black text-white px-4">
-        <div className="bg-black/60 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-2xl border border-green-800/40">
-          <h2 className="text-4xl font-bold text-center text-green-400 mb-8">
+      
+      <div
+        className={`min-h-screen flex items-center justify-center py-10 px-4 transition-colors ${
+          theme === "dark"
+            ? "bg-gray-900 text-gray-100"
+            : "bg-gradient-to-br from-green-950 via-teal-900 to-black text-white"
+        }`}
+      >
+        <div
+          className={`p-8 rounded-2xl shadow-lg w-full max-w-2xl border backdrop-blur-md transition-colors ${
+            theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-black/60 border-green-800/40"
+          }`}
+        >
+          <h2
+            className={`text-4xl font-bold text-center mb-8 transition-colors ${
+              theme === "dark" ? "text-green-400" : "text-green-400"
+            }`}
+          >
             Update Property
           </h2>
 
           <form onSubmit={handleUpdate} className="space-y-4">
-            {/* Form fields remain the same */}
+            {/* Property Name */}
             <div>
               <label className="block font-semibold mb-1">Property Name</label>
               <input
@@ -113,11 +154,16 @@ export default function UpdateProperty() {
                 value={property.title}
                 onChange={handleChange}
                 required
-                className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={`w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 transition-colors ${
+                  theme === "dark"
+                    ? "bg-gray-700 text-white border-gray-600 focus:ring-green-500"
+                    : "bg-white/90 text-black border-green-700 focus:ring-green-500"
+                }`}
                 placeholder="Enter property name"
               />
             </div>
 
+            {/* Description */}
             <div>
               <label className="block font-semibold mb-1">Description</label>
               <textarea
@@ -125,18 +171,27 @@ export default function UpdateProperty() {
                 value={property.description}
                 onChange={handleChange}
                 required
-                className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={`w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 transition-colors ${
+                  theme === "dark"
+                    ? "bg-gray-700 text-white border-gray-600 focus:ring-green-500"
+                    : "bg-white/90 text-black border-green-700 focus:ring-green-500"
+                }`}
                 placeholder="Write property details..."
               ></textarea>
             </div>
 
+            {/* Category */}
             <div>
               <label className="block font-semibold mb-1">Category</label>
               <select
                 name="type"
                 value={property.type}
                 onChange={handleChange}
-                className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={`w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 transition-colors ${
+                  theme === "dark"
+                    ? "bg-gray-700 text-white border-gray-600 focus:ring-green-500"
+                    : "bg-white/90 text-black border-green-700 focus:ring-green-500"
+                }`}
               >
                 <option>Rent</option>
                 <option>Sale</option>
@@ -145,6 +200,7 @@ export default function UpdateProperty() {
               </select>
             </div>
 
+            {/* Price */}
             <div>
               <label className="block font-semibold mb-1">Price (in BDT)</label>
               <input
@@ -153,11 +209,16 @@ export default function UpdateProperty() {
                 value={property.price}
                 onChange={handleChange}
                 required
-                className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={`w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 transition-colors ${
+                  theme === "dark"
+                    ? "bg-gray-700 text-white border-gray-600 focus:ring-green-500"
+                    : "bg-white/90 text-black border-green-700 focus:ring-green-500"
+                }`}
                 placeholder="Enter price"
               />
             </div>
 
+            {/* Location */}
             <div>
               <label className="block font-semibold mb-1">Location</label>
               <input
@@ -166,11 +227,16 @@ export default function UpdateProperty() {
                 value={property.location}
                 onChange={handleChange}
                 required
-                className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={`w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 transition-colors ${
+                  theme === "dark"
+                    ? "bg-gray-700 text-white border-gray-600 focus:ring-green-500"
+                    : "bg-white/90 text-black border-green-700 focus:ring-green-500"
+                }`}
                 placeholder="e.g., Dhanmondi, Dhaka"
               />
             </div>
 
+            {/* Image */}
             <div>
               <label className="block font-semibold mb-1">Image URL</label>
               <input
@@ -179,11 +245,16 @@ export default function UpdateProperty() {
                 value={property.image}
                 onChange={handleChange}
                 required
-                className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={`w-full px-3 py-2 rounded-md border focus:outline-none focus:ring-2 transition-colors ${
+                  theme === "dark"
+                    ? "bg-gray-700 text-white border-gray-600 focus:ring-green-500"
+                    : "bg-white/90 text-black border-green-700 focus:ring-green-500"
+                }`}
                 placeholder="Paste image link"
               />
             </div>
 
+            {/* User Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block font-semibold mb-1">User Name</label>
@@ -191,7 +262,9 @@ export default function UpdateProperty() {
                   type="text"
                   value={user?.displayName || user?.name || "Unknown"}
                   readOnly
-                  className="w-full border border-green-800 bg-gray-200 text-black px-3 py-2 rounded-md"
+                  className={`w-full px-3 py-2 rounded-md border ${
+                    theme === "dark" ? "bg-gray-600 text-white border-gray-600" : "bg-gray-200 text-black border-green-800"
+                  }`}
                 />
               </div>
               <div>
@@ -200,7 +273,9 @@ export default function UpdateProperty() {
                   type="email"
                   value={user?.email || ""}
                   readOnly
-                  className="w-full border border-green-800 bg-gray-200 text-black px-3 py-2 rounded-md"
+                  className={`w-full px-3 py-2 rounded-md border ${
+                    theme === "dark" ? "bg-gray-600 text-white border-gray-600" : "bg-gray-200 text-black border-green-800"
+                  }`}
                 />
               </div>
             </div>
@@ -215,7 +290,7 @@ export default function UpdateProperty() {
           </form>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 }

@@ -1,11 +1,14 @@
+// src/pages/AddProperty.jsx
 import React, { useContext, useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import api from "../api"; // Axios instance
+import { useTheme } from "../context/ThemeContext"; // Theme context
 
 export default function AddProperty() {
   const { user } = useContext(AuthContext);
+  const { theme } = useTheme(); // Theme toggle
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
@@ -38,7 +41,7 @@ export default function AddProperty() {
 
     setLoading(true);
     try {
-      const res = await api.post("/properties", propertyData);
+      await api.post("/properties", propertyData);
       Swal.fire({
         title: "Success!",
         text: "Property added successfully.",
@@ -53,7 +56,7 @@ export default function AddProperty() {
         location: "",
         image: "",
       });
-      navigate("/all-properties"); // Redirect to all properties
+      navigate("/my-properties");
     } catch (err) {
       console.error(err);
       Swal.fire(
@@ -67,46 +70,82 @@ export default function AddProperty() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-10 bg-gradient-to-br from-green-950 via-teal-900 to-black text-white">
-      <div className="bg-black/60 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-2xl border border-green-800/40">
-        <h2 className="text-4xl font-bold text-center text-green-400 mb-8">
+    <div
+      className={`min-h-screen flex items-center justify-center py-10 transition-colors ${
+        theme === "dark"
+          ? "bg-gray-900 text-gray-100"
+          : "bg-gradient-to-br from-green-950 via-teal-900 to-black text-white"
+      }`}
+    >
+      <div
+        className={`w-full max-w-2xl p-8 rounded-2xl shadow-lg border transition-colors ${
+          theme === "dark"
+            ? "bg-gray-800 border-gray-700"
+            : "bg-black/60 border-green-800/40 backdrop-blur-md"
+        }`}
+      >
+        <h2
+          className={`text-4xl font-bold text-center mb-8 transition-colors ${
+            theme === "dark" ? "text-green-400" : "text-green-400"
+          }`}
+        >
           Add New Property
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Property fields */}
-          <div>
-            <label className="block font-semibold mb-1">Property Name</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Enter property name"
-            />
-          </div>
+          {[
+            { label: "Property Name", name: "title", type: "text", placeholder: "Enter property name" },
+            { label: "Description", name: "description", type: "textarea", placeholder: "Write property details..." },
+            { label: "Price (in BDT)", name: "price", type: "number", placeholder: "Enter price" },
+            { label: "Location", name: "location", type: "text", placeholder: "e.g., Dhanmondi, Dhaka" },
+            { label: "Image URL", name: "image", type: "text", placeholder: "Paste image link" },
+          ].map((field, idx) => (
+            <div key={idx}>
+              <label className="block font-semibold mb-1">{field.label}</label>
+              {field.type === "textarea" ? (
+                <textarea
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  required
+                  placeholder={field.placeholder}
+                  className={`w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 transition-colors ${
+                    theme === "dark"
+                      ? "bg-gray-700 text-white border-gray-600 focus:ring-green-500"
+                      : "bg-white/90 text-black border-green-700 focus:ring-green-500"
+                  }`}
+                ></textarea>
+              ) : (
+                <input
+                  type={field.type}
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  required
+                  placeholder={field.placeholder}
+                  className={`w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 transition-colors ${
+                    theme === "dark"
+                      ? "bg-gray-700 text-white border-gray-600 focus:ring-green-500"
+                      : "bg-white/90 text-black border-green-700 focus:ring-green-500"
+                  }`}
+                />
+              )}
+            </div>
+          ))}
 
-          <div>
-            <label className="block font-semibold mb-1">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Write property details..."
-            ></textarea>
-          </div>
-
+          {/* Category */}
           <div>
             <label className="block font-semibold mb-1">Category</label>
             <select
               name="type"
               value={formData.type}
               onChange={handleChange}
-              className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className={`w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 transition-colors ${
+                theme === "dark"
+                  ? "bg-gray-700 text-white border-gray-600 focus:ring-green-500"
+                  : "bg-white/90 text-black border-green-700 focus:ring-green-500"
+              }`}
             >
               <option>Rent</option>
               <option>Sale</option>
@@ -115,46 +154,7 @@ export default function AddProperty() {
             </select>
           </div>
 
-          <div>
-            <label className="block font-semibold mb-1">Price (in BDT)</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              required
-              className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Enter price"
-            />
-          </div>
-
-          <div>
-            <label className="block font-semibold mb-1">Location</label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-              className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="e.g., Dhanmondi, Dhaka"
-            />
-          </div>
-
-          <div>
-            <label className="block font-semibold mb-1">Image URL</label>
-            <input
-              type="text"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              required
-              className="w-full border border-green-700 bg-white/90 text-black px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Paste image link"
-            />
-          </div>
-
-          {/* Owner info */}
+          {/* Owner Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block font-semibold mb-1">User Name</label>
@@ -162,7 +162,11 @@ export default function AddProperty() {
                 type="text"
                 value={user?.displayName || user?.name || "Unknown"}
                 readOnly
-                className="w-full border border-green-800 bg-gray-200 text-black px-3 py-2 rounded-md"
+                className={`w-full px-3 py-2 rounded-md transition-colors ${
+                  theme === "dark"
+                    ? "bg-gray-700 text-white border-gray-600"
+                    : "bg-gray-200 text-black border-green-800"
+                }`}
               />
             </div>
             <div>
@@ -171,7 +175,11 @@ export default function AddProperty() {
                 type="email"
                 value={user?.email || ""}
                 readOnly
-                className="w-full border border-green-800 bg-gray-200 text-black px-3 py-2 rounded-md"
+                className={`w-full px-3 py-2 rounded-md transition-colors ${
+                  theme === "dark"
+                    ? "bg-gray-700 text-white border-gray-600"
+                    : "bg-gray-200 text-black border-green-800"
+                }`}
               />
             </div>
           </div>
@@ -179,7 +187,11 @@ export default function AddProperty() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-md transition"
+            className={`w-full mt-6 py-2 font-bold rounded-md transition-colors ${
+              theme === "dark"
+                ? "bg-green-500 hover:bg-green-600 text-white"
+                : "bg-green-500 hover:bg-green-600 text-white"
+            }`}
           >
             {loading ? "Adding..." : "Add Property"}
           </button>

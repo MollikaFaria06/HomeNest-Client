@@ -1,29 +1,34 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FiMenu, FiX, FiSun, FiMoon, FiHome, FiGrid, FiPlus, FiFolder, FiStar, FiInfo } from 'react-icons/fi';
+import {
+  FiMenu,
+  FiX,
+  FiSun,
+  FiMoon,
+  FiHome,
+  FiGrid,
+  FiPlus,
+  FiFolder,
+  FiStar,
+  FiInfo
+} from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [ddOpen, setDdOpen] = useState(false);
-  const [dark, setDark] = useState(false);
-
   const ddRef = useRef(null);
 
-  /* ---------------- Dark Mode ---------------- */
-  useEffect(() => {
-    if (dark) document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-  }, [dark]);
-
-  /* ---------------- Click Outside ---------------- */
   useEffect(() => {
     const handler = (e) => {
-      if (ddRef.current && !ddRef.current.contains(e.target)) setDdOpen(false);
+      if (ddRef.current && !ddRef.current.contains(e.target)) {
+        setDdOpen(false);
+      }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -34,7 +39,7 @@ export default function Navbar() {
     navigate('/');
   };
 
-  /* ---------------- Routes ---------------- */
+  /* ---------------- Links ---------------- */
   const publicLinks = [
     { name: 'Home', to: '/', icon: <FiHome /> },
     { name: 'All Properties', to: '/all-properties', icon: <FiGrid /> },
@@ -74,7 +79,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-green-700 dark:bg-gray-900 text-white">
+    <nav className="sticky top-0 z-50 bg-gradient-to-r from-green-800 via-teal-900 to-yellow-700 text-white shadow-md">
       <div className="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between">
 
         {/* Logo */}
@@ -82,10 +87,10 @@ export default function Navbar() {
           onClick={() => navigate('/')}
           className="text-2xl font-bold text-yellow-400"
         >
-          🏡 HomeNest
+          🏡HomeNest
         </button>
 
-        {/* Desktop / Tablet Menu */}
+        {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-1 text-xs lg:gap-4 lg:text-sm">
           {[...publicLinks, ...(user ? privateLinks : [])].map(link => (
             <NavLink
@@ -107,9 +112,14 @@ export default function Navbar() {
 
         {/* Right Side */}
         <div className="flex items-center gap-2">
-          {/* Dark Mode Toggle */}
-          <button onClick={() => setDark(!dark)} className="p-1">
-            {dark ? <FiSun size={18} /> : <FiMoon size={18} />}
+
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-1 rounded hover:bg-white/10"
+            aria-label="Toggle Theme"
+          >
+            {theme === 'dark' ? <FiSun size={18} /> : <FiMoon size={18} />}
           </button>
 
           {/* Auth Section */}
@@ -130,17 +140,19 @@ export default function Navbar() {
             </div>
           ) : (
             <div className="relative hidden md:flex" ref={ddRef}>
-              <button onClick={() => setDdOpen(!ddOpen)}>
+              <button
+                onClick={() => setDdOpen(!ddOpen)}
+                className="focus:outline-none"
+                aria-label="User menu"
+              >
                 <Avatar />
               </button>
+
               {ddOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-lg">
-                  <div className="px-4 py-2 font-semibold">
-                    {user.displayName || 'User'}
-                  </div>
-                  <div className="px-4 text-xs text-gray-500 break-words">
-                    {user.email}
-                  </div>
+                <div className="absolute right-0 mt-2 w-52 rounded shadow-lg
+                                bg-white text-black">
+                  <div className="px-4 py-2 font-semibold">{user.displayName || 'User'}</div>
+                  <div className="px-4 text-xs text-gray-500 break-words">{user.email}</div>
                   <button
                     onClick={handleLogout}
                     className="w-full mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
@@ -152,10 +164,11 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile Toggle */}
+          {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden"
+            className="md:hidden p-1"
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Mobile menu toggle"
           >
             {mobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
@@ -164,8 +177,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-green-700 dark:bg-gray-900 px-4 pb-4 space-y-2">
-          {/* Mobile Profile */}
+        <div className="md:hidden px-4 pb-4 space-y-2 bg-gradient-to-r from-green-800 via-teal-900 to-yellow-700">
           {user && (
             <div className="flex items-center gap-2 py-2 border-b border-white/20">
               <Avatar />
@@ -176,7 +188,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Links */}
           {[...publicLinks, ...(user ? privateLinks : [])].map(link => (
             <NavLink
               key={link.to}
@@ -189,7 +200,6 @@ export default function Navbar() {
             </NavLink>
           ))}
 
-          {/* Mobile Auth */}
           {!user ? (
             <div className="flex gap-2 pt-2">
               <button

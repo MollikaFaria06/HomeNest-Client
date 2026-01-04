@@ -1,15 +1,24 @@
+// src/pages/MyProperties.jsx
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../api"; // Axios instance
+import { useTheme } from "../context/ThemeContext";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function MyProperties() {
   const { user } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+
+  useEffect(() => {
+    AOS.init({ duration: 800, once: true, easing: "ease-in-out" });
+  }, []);
 
   useEffect(() => {
     if (!user?.email) return;
@@ -43,7 +52,7 @@ export default function MyProperties() {
     if (result.isConfirmed) {
       try {
         setDeletingId(id);
-        const { data } = await api.delete(`/properties/${id}`); // JWT auto attach
+        const { data } = await api.delete(`/properties/${id}`);
         Swal.fire("Deleted!", data.message || "Property has been removed.", "success");
         setProperties((prev) => prev.filter((prop) => prop._id !== id));
       } catch (err) {
@@ -55,23 +64,60 @@ export default function MyProperties() {
     }
   };
 
-  if (loading)
-    return <div className="text-center mt-10 text-lg text-gray-300">Loading your properties...</div>;
+  const renderSkeleton = () => {
+    const skeletons = Array.from({ length: 8 }).map((_, idx) => (
+      <div
+        key={idx}
+        className={`animate-pulse rounded-2xl overflow-hidden shadow-lg h-80 ${
+          theme === "dark" ? "bg-gray-700" : "bg-black/40"
+        }`}
+      >
+        <div className={`h-56 w-full ${theme === "dark" ? "bg-gray-600" : "bg-gray-800"}`}></div>
+        <div className="p-4 space-y-2">
+          <div className="h-5 w-3/4 bg-gray-500 rounded"></div>
+          <div className="h-4 w-1/2 bg-gray-500 rounded"></div>
+          <div className="h-4 w-1/3 bg-gray-500 rounded"></div>
+          <div className="h-8 w-full bg-gray-500 rounded mt-2"></div>
+        </div>
+      </div>
+    ));
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+        {skeletons}
+      </div>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-950 via-teal-900 to-black p-6">
-      <h2 className="text-4xl font-bold mb-8 text-center text-green-400">
+    <div
+      className={`min-h-screen p-6 transition-colors ${
+        theme === "dark"
+          ? "bg-gray-900 text-gray-100"
+          : "bg-gradient-to-br from-green-950 via-teal-900 to-black text-white"
+      }`}
+    >
+      <h2
+        className={`text-4xl font-bold mb-8 text-center transition-colors ${
+          theme === "dark" ? "text-green-400" : "text-green-400"
+        }`}
+      >
         My <span className="text-teal-300">Properties</span>
       </h2>
 
-      {properties.length === 0 ? (
+      {loading ? (
+        renderSkeleton()
+      ) : properties.length === 0 ? (
         <p className="text-center text-gray-300">You haven’t added any properties yet.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((property) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          {properties.map((property, idx) => (
             <div
               key={property._id}
-              className="bg-black rounded-2xl shadow-lg overflow-hidden hover:scale-[1.02] transition-transform duration-300"
+              data-aos="fade-up"
+              data-aos-delay={idx * 100} // staggered animation
+              className={`rounded-2xl shadow-lg overflow-hidden hover:scale-[1.02] transition-transform duration-300 ${
+                theme === "dark" ? "bg-gray-800" : "bg-black"
+              }`}
             >
               <img
                 src={property.image}
@@ -79,16 +125,16 @@ export default function MyProperties() {
                 className="w-full h-56 object-cover"
               />
               <div className="p-4">
-                <h3 className="text-lg text-red-500 font-bold">{property.title}</h3>
-                <p className="text-gray-300">
+                <h3 className="text-lg text-green-500 font-bold">{property.title}</h3>
+                <p className="text-yellow-500">
                   <strong>Category:</strong>{" "}
-                  <span className="text-yellow-400">{property.type}</span>
+                  <span className="text-yellow-500">{property.type}</span>
                 </p>
-                <p className="text-green-500 font-bold mt-1">
+                <p className="text-yellow-500 font-bold mt-1">
                   Price: ${property.price.toLocaleString()}
                 </p>
-                <p className="text-blue-400 mt-1">Place: {property.location}</p>
-                <p className="text-sm text-purple-400 mt-1">
+                <p className="text-yellow-500 mt-1">Place: {property.location}</p>
+                <p className="text-sm text-yellow-500 mt-1">
                   Posted on: {new Date(property.createdAt).toLocaleDateString("en-GB")}
                 </p>
 
